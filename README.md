@@ -6,9 +6,9 @@ For example, with a Jupyter notebook, you can
 
 ```python
 
-from research_tools.research_tools import run_pipeline
-from research_tools.ics.ics_scheme import Sector
-from research_tools.fundamentals.fundamentals import Fundamentals
+from alphatools.alphatools import run_pipeline
+from alphatools.ics.ics_scheme import Sector
+from alphatools.fundamentals.fundamentals import Fundamentals
 from zipline.pipeline.data import USEquityPricing as USEP
 from zipline.pipeline.factors import Returns, AverageDollarVolume
 from zipline.pipeline import Pipeline
@@ -47,8 +47,8 @@ pip install scikit-learn --no-binary
 pip install ipykernel
 python -m ipykernel install --user --name py27 --display-name "Python 2.7 (py27)"
 zipline ingest
-git clone https://github.com/marketneutral/research-tools.git
-pip install -e research-tools
+git clone https://github.com/marketneutral/alphatools.git
+pip install -e alphatools
 pip install alphalens
 python ics_scheme.py 
 ```
