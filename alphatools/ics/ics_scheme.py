@@ -78,7 +78,7 @@ class SubIndustry(Classifier):
 
 def make_sector_classifier(
         bundle='quandl',
-        infile='profiles_20170918.csv'):
+        infile='../data/profiles_20170918.csv'):
     """
     For a given bundle, create the .npy Sector and Industry classifier
     files.
@@ -114,12 +114,12 @@ def make_sector_classifier(
 
 def make_SIC_classifier(
         bundle='quandl',
-        infile='profiles_20170918.csv'):
+        infile='../data/profiles_20170918.csv'):
 
     bundle_data = bundles.load(bundle)
 
-    df_p = pd.read_csv('profiles_20170918.csv')
-    df_cik = pd.read_csv('cik_ticker_09152017.csv', sep='|')
+    df_p = pd.read_csv(infile)
+    df_cik = pd.read_csv('../data/cik_ticker_09152017.csv', sep='|')
     df_cik['SIC'] = df_cik['SIC'].fillna(-1).astype(np.int64).astype(str)
     df_cik['SIC_MajorIndustry'] = df_cik['SIC'].str[:2]
     df_cik['SIC_SubClassification'] = df_cik['SIC'].str[:3]
