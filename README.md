@@ -47,8 +47,8 @@ pip install scikit-learn --no-binary
 pip install ipykernel
 python -m ipykernel install --user --name py27 --display-name "Python 2.7 (py27)"
 zipline ingest
-pip install alphatools
 pip install alphalens
+pip install alphatools
 python ics_scheme.py 
 ```
 
