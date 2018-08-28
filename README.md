@@ -47,8 +47,7 @@ pip install scikit-learn --no-binary
 pip install ipykernel
 python -m ipykernel install --user --name py27 --display-name "Python 2.7 (py27)"
 zipline ingest
-git clone https://github.com/marketneutral/alphatools.git
-pip install -e alphatools
+pip install alphatools
 pip install alphalens
 python ics_scheme.py 
 ```
@@ -65,7 +64,7 @@ Though this is in the `LICENSE` file, it bears noting that this software is prov
 
 Additionally, nothing in this package constitutes investment advice. This package is a personal project and nothing in its functionality or examples is reflective of any past or current employer.
 
-Lastly, there are no automated tests, no docstrings, no PyPI packaging, or any other feature associated with what you might consider a well supported open source package. 
+Lastly, there are no automated tests (or any tests for that matter), no docstrings, or any other features associated with what you might consider a well supported open source package. 
 
 ## Contributing
 
