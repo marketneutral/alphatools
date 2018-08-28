@@ -1,0 +1,13 @@
+from setuptools import setup
+
+setup(
+   name='research_tools',
+   version='0.1',
+   description='Quant finance resarch workbench tools',
+   author='Jonathan Larkin',
+   author_email='jonathan.r.larkin@gmail.com',
+   packages=['research_tools',
+             'research_tools.ics',
+             'research_tools.fundamentals'],
+   install_requires=['numpy', 'pandas', 'zipline'],
+)
