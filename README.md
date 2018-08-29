@@ -1,8 +1,8 @@
 # alphatools
 
-This allows you to run a Jupyter notebook research sandbox for factor research.
+This package provides convenience functions to help make the alpha factor research process more accessible.
 
-For example, with a Jupyter notebook, you can
+For example, with `alphatools`, in a Jupyter notebook, you can
 
 ```python
 
@@ -53,6 +53,8 @@ zipline ingest
 ```
 pip install alphatools
 ```
+
+This package is under very active development. For the time being, better is likely `pip install git+https://github.com/marketneutral/alphatools`.
 
 Note that when you run `zipline ingest` the security master is built from scratch and each `sid` is assigned at that time. You must map the `Sector`, `Industry` classifiers in this package after every `zipline ingest`. You can do this with
 
