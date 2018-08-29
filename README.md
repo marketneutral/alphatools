@@ -62,6 +62,12 @@ Note that when you run `zipline ingest` the security master is built from scratc
 alphatools ingest
 ```
 
+`zipline` requires a version of `blaze` which is not on PyPI. As such, you can get the compatible version with
+
+```
+alphatools get_blaze
+```
+
 You'll want to make the `py27` env available to Jupyter. To do this run
 
 ```
