@@ -1,1 +1,2 @@
 include data/*
+recursive-include data *
