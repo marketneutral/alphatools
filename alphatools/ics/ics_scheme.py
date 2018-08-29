@@ -85,7 +85,7 @@ def make_sector_classifier(
     """
     bundle_data = bundles.load(bundle)
 
-    df_p = pd.read_csv(infile)
+    df_p = pd.read_csv(path.join(path.dirname(__file__), infile))
 
     labels_sector, uniques_sector = pd.factorize(df_p['sector'])
     labels_industry, uniques_industry = pd.factorize(df_p['industry'])
@@ -102,13 +102,21 @@ def make_sector_classifier(
     sectors[sids] = labels_sector
     industries[sids] = labels_industry
 
-    np.save('sectors', sectors)
-    np.save('industries', industries)
+    np.save(path.join(
+        path.dirname(__file__), '../data/sectors'
+    ), sectors)
+    np.save(path.join(
+        path.dirname(__file__), '../data/industries'
+    ), industries)
 
     pd.DataFrame(data=uniques_sector.tolist()).to_csv(
-        'sector_names.csv', header=False)
+        path.join(path.dirname(__file__), '../data/sector_names.csv'),
+        header=False
+    )
     pd.DataFrame(data=uniques_industry.tolist()).to_csv(
-        'industry_names.csv', header=False)
+        path.join(path.dirname(__file__), '../data/industry_names.csv'),
+        header=False
+    )
 
     return True
 
@@ -145,5 +153,6 @@ def make_SIC_classifier(
 
     
 if __name__ == '__main__':
-    make_sector_classifier()
-    make_SIC_classifier()
+    pass
+#    make_sector_classifier()
+#    make_SIC_classifier()

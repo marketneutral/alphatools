@@ -14,5 +14,10 @@ setup(
         'zipline<=1.3',
         'alphalens',
         'ipykernel'
-    ]
+    ],
+    entry_points={
+        'console_scripts': [
+            'alphatools = alphatools.__main__:main',
+        ]
+    }
 )
