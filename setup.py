@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='alphatools',
@@ -8,10 +8,7 @@ setup(
     author_email='jonathan.r.larkin@gmail.com',
     url = "https://github.com/marketneutral/alphatools",
     download_url = "https://github.com/marketneutral/alphatools/archive/0.11.tar.gz",
-    packages=['alphatools',
-              'alphatools.ics',
-              'alphatools.fundamentals'
-    ],
+    packages=find_packages(),
     install_requires=[
         'zipline',
         'alphalens',
