@@ -7,7 +7,7 @@ from zipline.pipeline.engine import SimplePipelineEngine
 from zipline.pipeline.loaders import USEquityPricingLoader
 from zipline.utils.calendars import get_calendar
 from zipline.assets._assets import Equity
-
+from zipline.pipeline.loaders.blaze import BlazeLoader, from_blaze
 
 # Set-Up Pricing Data Access
 trading_calendar = get_calendar('NYSE')
@@ -16,6 +16,9 @@ bundle_data = bundles.load(bundle)
 
 
 loaders = {}
+
+# create and empty BlazeLoader
+blaze_loader = BlazeLoader()
 
 def my_dispatcher(column):
     return loaders[column]
@@ -28,7 +31,11 @@ pipeline_loader = USEquityPricingLoader(
 def choose_loader(column):
     if column in USEquityPricing.columns:
         return pipeline_loader
-    return my_dispatcher(column)
+    try:
+        return my_dispatcher(column)
+    except:
+        pass
+    return blaze_loader
 
 # Set-Up Pipeline Engine
 engine = SimplePipelineEngine(
