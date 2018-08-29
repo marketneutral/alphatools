@@ -1,6 +1,5 @@
 {
-    "data_source": "sample.csv",
-    {
+    "sample.csv": {
 	"schema": "var*{asof_date: datetime, sid: int64, value: float64}"
     }
 }
