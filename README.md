@@ -1,4 +1,5 @@
-# alphatools
+![](https://user-images.githubusercontent.com/16124573/44810782-d0bd8b00-aba0-11e8-81f3-e4fe042c481d.png)
+
 
 This package provides convenience functions to help make the alpha factor research process more accessible.
 
