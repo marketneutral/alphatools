@@ -54,7 +54,12 @@ zipline ingest
 pip install alphatools
 ```
 
-This package is under very active development. For the time being, better is likely `pip install git+https://github.com/marketneutral/alphatools`.
+This package is under very active development. For the time being, better is likely 
+
+```
+git clone https://github.com/marketneutral/alphatools
+pip intstall -e alphatools
+```
 
 Note that when you run `zipline ingest` the security master is built from scratch and each `sid` is assigned at that time. You must map the `Sector`, `Industry` classifiers in this package after every `zipline ingest`. You can do this with
 
