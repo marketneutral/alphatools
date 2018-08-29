@@ -9,8 +9,9 @@ setup(
     url = "https://github.com/marketneutral/alphatools",
     download_url = "https://github.com/marketneutral/alphatools/archive/0.11.tar.gz",
     packages=find_packages(),
+    python_requires='>2.7, <3.0',
     install_requires=[
-        'zipline',
+        'zipline<=1.3',
         'alphalens',
         'blaze',
         'ipykernel'
