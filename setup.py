@@ -10,6 +10,12 @@ setup(
     download_url = "https://github.com/marketneutral/alphatools/archive/0.10.tar.gz",
     packages=['alphatools',
               'alphatools.ics',
-              'alphatools.fundamentals'],
-    install_requires=['numpy', 'pandas', 'zipline'],
+              'alphatools.fundamentals'
+    ],
+    install_requires=[
+        'zipline',
+        'alphalens',
+        'blaze',
+        'ipykernel'
+    ]
 )

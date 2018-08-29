@@ -42,14 +42,11 @@ source activate py27
 conda install -c Quantopian zipline=1.1.1
 conda install pandas-datareader==0.2.1
 conda install networkx==1.9.1
-pip install blaze
 pip install scikit-learn --no-binary
-pip install ipykernel
-python -m ipykernel install --user --name py27 --display-name "Python 2.7 (py27)"
-zipline ingest
-pip install alphalens
 pip install alphatools
-python ics_scheme.py 
+zipline ingest
+python -m ipykernel install --user --name py27 --display-name "Python 2.7 (py27)"
+python ics_scheme.py
 ```
 
 Note that when you run `zipline ingest` the security master is built from scratch and each `sid` is assigned at that time. You must map the `Sector`, `Industry`, etc. classifiers in this package after every `zipline ingest` with `python ics_scheme.py`.
