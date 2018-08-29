@@ -44,19 +44,32 @@ source activate py27
 conda install -c Quantopian zipline=1.1.1
 conda install pandas-datareader==0.2.1
 conda install networkx==1.9.1
-pip install scikit-learn --no-binary
+pip install scikit-learn --no-binary :all:
 zipline ingest
-python -m ipykernel install --user --name py27 --display-name "Python 2.7 (py27)"
+
 ```
 
 ### Install `alphatools`
 
 ```
 pip install alphatools
+```
+
+You'll want to make the `py27` env available to Jupyter. To do this run
+
+```
+python -m ipykernel install --user --name py27 --display-name "Python 2.7 (py27)"
+```
+
+
+Note that when you run `zipline ingest` the security master is built from scratch and each `sid` is assigned at that time. You must map the `Sector`, `Industry`, etc. classifiers in this package after every `zipline ingest` with `python ics_scheme.py`.
+
+As such, # THIS DOESN'T WORK... only works with pip install -e alphatools...
+
+```
 python ics_scheme.py
 ```
 
-Note that when you run `zipline ingest` the security master is built from scratch and each `sid` is assigned at that time. You must map the `Sector`, `Industry`, etc. classifiers in this package after every `zipline ingest` with `python ics_scheme.py`.
 
 ## Data
 

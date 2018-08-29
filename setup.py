@@ -13,7 +13,6 @@ setup(
     install_requires=[
         'zipline<=1.3',
         'alphalens',
-        'blaze',
         'ipykernel'
     ]
 )
