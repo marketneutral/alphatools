@@ -16,7 +16,7 @@ def main():
 
 @main.command()
 def get_blaze():
-    req = path.join(this_path, 'requirements_blaze.txt')
+    req = path.join(this_path, 'misc/requirements_blaze.txt')
     print(req)
     subprocess.call([sys.executable, "-m", "pip", "install", "-r" + req])
 
