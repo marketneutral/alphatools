@@ -62,7 +62,7 @@ Note that when you run `zipline ingest` the security master is built from scratc
 alphatools ingest
 ```
 
-`zipline` requires a version of `blaze` which is not on PyPI. As such, you can get the compatible version with
+`zipline` requires a version of `blaze` which is not on PyPI. As such, you can get the compatible version with the following command. Note that this runs a `pip install` so make sure you have activated the environment.
 
 ```
 alphatools get_blaze
