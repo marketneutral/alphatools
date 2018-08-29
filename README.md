@@ -6,9 +6,9 @@ For example, with a Jupyter notebook, you can
 
 ```python
 
-from alphatools.alphatools import run_pipeline
-from alphatools.ics.ics_scheme import Sector
-from alphatools.fundamentals.fundamentals import Fundamentals
+from alphatools.research import run_pipeline
+from alphatools.ics import Sector
+from alphatools.fundamentals import Fundamentals
 from zipline.pipeline.data import USEquityPricing as USEP
 from zipline.pipeline.factors import Returns, AverageDollarVolume
 from zipline.pipeline import Pipeline
@@ -34,7 +34,9 @@ df = run_pipeline(p, start_date, end_date)
 
 ## Installation
 
-These install steps worked for me on Max OS X. Minimally you need a proper install of `zipeline`. Zipline is built against certain version of `numpy` and `pandas` which can make it tricky. For example, if you want to use `scikit-learn` you have to compile it versus that `numpy` version specifically (needing `gcc` via Apple dev tools or via `brew`). Currently this package has been developed for Python 2.7. The install process that worked for me is
+These install steps worked for me on Max OS X. Minimally you need a proper install of `zipeline`. Zipline is built against certain version of `numpy` and `pandas` which can make it tricky. For example, if you want to use `scikit-learn` you have to compile it versus that `numpy` version specifically (needing `gcc` via Apple dev tools or via `brew`). Currently this package has been developed for Python 2.7. The install process that worked for me is as follows.
+
+### Create Zipline Environment
 
 ```
 conda create -n py27 python=2.7 anaconda
@@ -43,9 +45,14 @@ conda install -c Quantopian zipline=1.1.1
 conda install pandas-datareader==0.2.1
 conda install networkx==1.9.1
 pip install scikit-learn --no-binary
-pip install alphatools
 zipline ingest
 python -m ipykernel install --user --name py27 --display-name "Python 2.7 (py27)"
+```
+
+### Install `alphatools`
+
+```
+pip install alphatools
 python ics_scheme.py
 ```
 
