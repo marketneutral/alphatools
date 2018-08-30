@@ -95,7 +95,7 @@ This package is under very active development. For the time being, better is lik
 
 ```
 git clone https://github.com/marketneutral/alphatools
-pip intstall -e alphatools
+pip install -e alphatools
 ```
 
 Note that when you run `zipline ingest` the security master is built from scratch and each `sid` is assigned at that time. You must map the `Sector`, `Industry` classifiers in this package **and all your own data** after every `zipline ingest`. You can map the `Sector` and `Industry` classifiers with
