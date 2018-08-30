@@ -1,15 +1,14 @@
 ![](https://user-images.githubusercontent.com/16124573/44810782-d0bd8b00-aba0-11e8-81f3-e4fe042c481d.png)
 
 
-This package provides convenience functions to help make the alpha factor research process more accessible.
+This package provides convenience functions to help make the alpha factor research process more accessible. The convenience functions sit on top of [zipline]() and, specifically, the `Pipeline` cross-sectional classes and functions in that package. `alphatools` allows you to `run_pipeline` in a Jupyter notebook and supports the easy creation of `Pipeline` factors on arbitrary data sources **at runtime**. In other words, just expose the endpoint for data sitting somewhere and...it's available for use in `Pipeline`.
 
 For example, with `alphatools`, in a Jupyter notebook, you can
 
 ```python
-
 from alphatools.research import run_pipeline
 from alphatools.ics import Sector
-from alphatools.fundamentals import Fundamentals
+from alphatools.data import Factory
 from zipline.pipeline.data import USEquityPricing as USEP
 from zipline.pipeline.factors import Returns, AverageDollarVolume
 from zipline.pipeline import Pipeline
@@ -24,8 +23,7 @@ my_factor = (
 p = Pipeline(screen=universe)
 p.add(my_factor, '5d_MR_Sector_Neutral_Rank')
 p.add(Sector(), 'Sector')
-p.add(Fundamentals.MarketCap.latest.zscore(), 'MCAP')
-p.add(Fundamentals.PriceToBook.latest.zscore(), 'PB')
+p.add(Factory['my_special_data'].value.latest.zscore(), 'PB')
 
 start_date = '2017-01-04'
 end_date = '2017-12-28'
@@ -33,9 +31,38 @@ end_date = '2017-12-28'
 df = run_pipeline(p, start_date, end_date)
 ```
 
+## Bring Your Own Data
+
+To "Bring Your Own Data", you simply point the Factory object to an endpoint and specify the schema. This is done by adding to the `json` file `data_sources.json`. For example, if you have a `csv` file on disk, `data.csv`, and a PostgreSQL table somewhere else, you would create `data_sources.json` as
+
+```json
+{
+	"my_special_data": {
+		"url": "/full/path/to/data/data.csv",
+		"schema": "var * {asof_date: datetime, sid: int64, value: float64}"
+	},
+	
+	"my_database_data": {
+		"url": "postgresql://user:pass@hostname::my-table-name",
+		"schema": "var * {asof_date: datetime, sid: int64, price_to_book: float64}"
+}
+```
+
+The `scheme` is specified in the `dshape` DSL from the package [`datashape`]() with docs [here](). Note that this data must be mapped to the `sid` as mapped by `zipline ingest`. (TODO: add `alphatools map <data_source> <output>`). You can then access this data like
+
+```python
+from alphatools.data import Factory
+	:
+	:
+	:
+	
+my_factor = Factory['my_database_data'].price_to_book.latest.rank()
+p.add(my_factor)
+```
+
 ## Installation
 
-These install steps worked for me on Max OS X. Minimally you need a proper install of `zipeline`. Zipline is built against certain version of `numpy` and `pandas` which can make it tricky. For example, if you want to use `scikit-learn` you have to compile it versus that `numpy` version specifically (needing `gcc` via Apple dev tools or via `brew`). Currently this package has been developed for Python 2.7. The install process that worked for me is as follows.
+These install steps worked for me on Max OS X. Minimally you need a proper install of `zipline`. Zipline is built against certain version of `numpy` and `pandas` which can make it tricky. For example, if you want to use `scikit-learn` you have to compile it versus that `numpy` version specifically (needing `gcc` via Apple dev tools or via `brew`). Currently this package has been developed for Python 2.7. The install process that worked for me is as follows.
 
 ### Create Zipline Environment
 
@@ -81,7 +108,7 @@ python -m ipykernel install --user --name py27 --display-name "Python 2.7 (py27)
 ```
 
 
-## Data
+## A Word on Sector and Industry Classfiers Included
 
 Sector and Industry data were scraped from Yahoo Finance on September 18, 2017 for the full Quandl WIKI universe at that time. The SIC and CIK codes were scraped from [Rank and Filed](http://rankandfiled.com/). The classifiers built from this data assume that the codes have never and do never change (i.e., there is no concept of an asset being reclassified over time). **Be aware that there is lookahead bias in this** (e.g., a good example of why there is lookahead bias is with Corning, Inc. which is classified as a Technology/Electronic Components company in this dataset, but from 1851 to the 2000s(?) was actually classified as a boring Industrial glass company; the economic make up the company changed sometime in the early 1990s when optic fiber production became an important revenue driver and later with iPhone glass. At some point, the ICS providers changed the classification from "boring" to "high tech", but this was surely lagging the actual transformation of the company; hence...lookahead bias). There is no Fundamental data included in the package; the `Fundamentals` pipeline factors can be built from `make_fundamentals.py` with your own data. Note that these factors use the `DataFrameLoader` which means the data must fit in memory. Alternatively you can see the example of using the `BlazeLoader` in the `notebooks` directory.
 
