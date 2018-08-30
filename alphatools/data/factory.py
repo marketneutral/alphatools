@@ -20,6 +20,8 @@ for source in data_sources.keys():
     loc = data_sources[source]['url']
     shape = dshape(data_sources[source]['schema'])
 
+    loc = path.expandvars(loc)
+
     expr = bz.data(
         loc,
         dshape=shape

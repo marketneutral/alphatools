@@ -46,10 +46,12 @@ To "Bring Your Own Data", you simply point the Factory object to an endpoint and
 	},
 	
 	"my_database_data": {
-		"url": "postgresql://user:pass@hostname::my-table-name",
+		"url": "postgresql://$USER:$PASS@hostname::my-table-name",
 		"schema": "var * {asof_date: datetime, sid: int64, price_to_book: float64}"
 }
 ```
+
+In the case of the example PostgreSQL `url`, note that the text `$USER` will be substituted with the text in the environment variable `USER` and the text `$PASS` will be substituted with the text in the environment variable `PASS`. Basically, any text token in the `url` which is preceeded by `$` will be substituted by the text in the environment variable of that name. Hence, you do not need to expose actual credentials in this file.
 
 The `schema` is specified in the `dshape` DSL from the package `datashape` with docs [here](). The magic happens via the `blaze/datashape/odo` stack. You can specify the `url` to a huge variety of source formats including `json`, `csv`, PostgreSQL tables, MongoDB collections, `bcolz`, Microsoft Excel(!?), `.gz` compressed files, collections of files (e.g., `myfiles_*.csv`), and remote locations like Amazon S3 and a Hadoop Distributed File System. To me, the `odo` [docs](http://odo.pydata.org/en/latest/uri.html) are the clearest on this.
 
