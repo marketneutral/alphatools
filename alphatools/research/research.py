@@ -61,12 +61,11 @@ data = DataPortal(
 )
 
 def get_symbols(tickers, as_of_date=None):
-    #TODO: this doesn't work for a list of tickers
     if (type(tickers)==str):
         return bundle_data.asset_finder.lookup_symbols(
             [tickers], as_of_date=as_of_date)
     else:
-        if(type(tickers[0]==Equity)):
+        if(type(tickers[0])==Equity):
            return tickers
         else:
            return bundle_data.asset_finder.lookup_symbols(
