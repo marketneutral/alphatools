@@ -1,7 +1,7 @@
 ![](https://user-images.githubusercontent.com/16124573/44810782-d0bd8b00-aba0-11e8-81f3-e4fe042c481d.png)
 
 
-This package provides convenience functions to help make the alpha factor research process more accessible. The convenience functions sit on top of [zipline]() and, specifically, the `Pipeline` cross-sectional classes and functions in that package. `alphatools` allows you to `run_pipeline` in a Jupyter notebook local to you and supports the easy creation of `Pipeline` factors **at runtime** on arbitrary data sources. In other words, just expose the endpoint for data sitting somewhere, specify the schema, and...it's available for use in `Pipeline`!
+This package provides convenience functions to help make the alpha factor research process more accessible. The convenience functions sit on top of [zipline]() and, specifically, the `Pipeline` cross-sectional classes and functions in that package. `alphatools` allows you to `run_pipeline` in a Jupyter notebook local to you and supports the easy creation of `Pipeline` factors **at runtime** on **arbitrary data sources**. In other words, just expose the endpoint for data sitting somewhere, specify the schema, and...it's available for use in `Pipeline`!
 
 For example, with `alphatools`, in a Jupyter notebook, you can
 
@@ -14,6 +14,7 @@ from zipline.pipeline.factors import Returns, AverageDollarVolume
 from zipline.pipeline import Pipeline
 
 universe = AverageDollarVolume(window_length=120).top(500)
+
 my_factor = (
     -Returns(mask=universe, window_length=5).
     demean(groupby=Sector()).
@@ -21,8 +22,10 @@ my_factor = (
 )
 
 p = Pipeline(screen=universe)
+
 p.add(my_factor, '5d_MR_Sector_Neutral_Rank')
 p.add(Sector(), 'Sector')
+
 p.add(Factory['my_special_data'].value.latest.zscore(), 'PB')
 
 start_date = '2017-01-04'
@@ -50,7 +53,7 @@ To "Bring Your Own Data", you simply point the Factory object to an endpoint and
 
 The `schema` is specified in the `dshape` DSL from the package `datashape` with docs [here](). The magic happens via the `blaze/datashape/odo` stack. You can specify the `url` to a huge variety of source formats including `json`, `csv`, PostgreSQL tables, MongoDB collections, `bcolz`, Microsoft Excel(!?), `.gz` compressed files, collections of files (e.g., `myfiles_*.csv`), and remote locations like Amazon S3 and a Hadoop Distributed File System. To me, the `odo` [docs](http://odo.pydata.org/en/latest/uri.html) are the clearest on this.
 
-Note that this data must be mapped to the `sid` as mapped by `zipline ingest`. Also, the data date my be in a column titled `asof_date`. (TODO: add `alphatools map <data_source> <output>`). You can then access this data like
+Note that this data must be mapped to the `sid` as mapped by `zipline ingest`. Also, the data rowwise dates must be in a column titled `asof_date`. You can then access this data like
 
 ```python
 from alphatools.data import Factory
@@ -62,7 +65,7 @@ my_factor = Factory['my_database_data'].price_to_book.latest.rank()
 p.add(my_factor)
 ```
 
-This functionality should allow you to use new data in research very quickly with the absolute minimal amount of data engineering. For example, commercial risk model providers often provide a single file per day for factor loadings (e.g., `data_yyyymmdd_fac.csv`). After `sid` mapping and converting the date column name to `asof_date`,  this data can be immediately available in `Pipeline` by putting a `url` in `data_sources.json` like `"url": "/path/to/dir/data_*_fac.csv"`, and `schema` like `"var * {asof_date: datetime, sid: int64, VALUE: float64, MOMENTUM: float64, ST_REVERSAL: float64 ..."`.
+This functionality should allow you to use new data in research very quickly with the absolute minimal amount of data engineering and/or munging. For example, commercial risk model providers often provide a single file per day for factor loadings (e.g., `data_yyyymmdd_fac.csv`). After `sid` mapping and converting the date column name to `asof_date`,  this data can be immediately available in `Pipeline` by putting a `url` in `data_sources.json` like `"url": "/path/to/dir/data_*_fac.csv"`, and `schema` like `"var * {asof_date: datetime, sid: int64, MKT_BETA: float64, VALUE: float64, MOMENTUM: float64, ST_REVERSAL: float64 ..."`.
 
 ## Installation
 
