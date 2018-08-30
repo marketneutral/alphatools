@@ -50,7 +50,7 @@ To "Bring Your Own Data", you simply point the Factory object to an endpoint and
 
 The `schema` is specified in the `dshape` DSL from the package [`datashape`]() with docs [here](). The magic happens via the `blaze/datashape/odo` stack. You can specify the `URL` to a huge variety of sources including `json`, `csv`, `postgresql`, `mongodb`, `bcolz`, Microsoft Excel(!?), `.gz` compressed files, collections of files (e.g., `myfiles_*.csv`), and remote locations like Amazon S3 and a Hadoop Distributed File System. To me, the `odo` [docs](http://odo.pydata.org/en/latest/uri.html) are the clearest on this.
 
-Note that this data must be mapped to the `sid` as mapped by `zipline ingest`. (TODO: add `alphatools map <data_source> <output>`). You can then access this data like
+Note that this data must be mapped to the `sid` as mapped by `zipline ingest`. Also, the data date my be in a column titled `asof_date`. (TODO: add `alphatools map <data_source> <output>`). You can then access this data like
 
 ```python
 from alphatools.data import Factory
@@ -61,6 +61,8 @@ from alphatools.data import Factory
 my_factor = Factory['my_database_data'].price_to_book.latest.rank()
 p.add(my_factor)
 ```
+
+This functionality should allow you to use new data in research very quickly with the absolute minimal amount of data engineering. For example, commercial risk model providers often provide a single file per day for factor loadings (e.g., `data_yyyymmdd_fac.csv`). After `sid` mapping and converting the date column name to `asof_date`,  this data can be immediately available in `Pipeline` by putting a `url` in `data_sources.json` like `"url": "/path/to/dir/data_*_fac.csv"`, and `schema` like `"var * {asof_date: datetime, sid: int64, VALUE: float64, MOMENTUM: float64, ST_REVERSAL: float64 ..."`.
 
 ## Installation
 
