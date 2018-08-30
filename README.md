@@ -89,7 +89,7 @@ git clone https://github.com/marketneutral/alphatools
 pip intstall -e alphatools
 ```
 
-Note that when you run `zipline ingest` the security master is built from scratch and each `sid` is assigned at that time. You must map the `Sector`, `Industry` classifiers in this package after every `zipline ingest`. You can do this with
+Note that when you run `zipline ingest` the security master is built from scratch and each `sid` is assigned at that time. You must map the `Sector`, `Industry` classifiers in this package **and all your own data** after every `zipline ingest`. You can map the `Sector` and `Industry` classifiers with
 
 ```
 alphatools ingest
@@ -110,7 +110,7 @@ python -m ipykernel install --user --name py27 --display-name "Python 2.7 (py27)
 
 ## A Word on Sector and Industry Classfiers Included
 
-Sector and Industry data were scraped from Yahoo Finance on September 18, 2017 for the full Quandl WIKI universe at that time. The SIC and CIK codes were scraped from [Rank and Filed](http://rankandfiled.com/). The classifiers built from this data assume that the codes have never and do never change (i.e., there is no concept of an asset being reclassified over time). **Be aware that there is lookahead bias in this** (e.g., a good example of why there is lookahead bias is with Corning, Inc. which is classified as a Technology/Electronic Components company in this dataset, but from 1851 to the 2000s(?) was actually classified as a boring Industrial glass company; the economic make up the company changed sometime in the early 1990s when optic fiber production became an important revenue driver and later with iPhone glass. At some point, the ICS providers changed the classification from "boring" to "high tech", but this was surely lagging the actual transformation of the company; hence...lookahead bias). There is no Fundamental data included in the package; the `Fundamentals` pipeline factors can be built from `make_fundamentals.py` with your own data. Note that these factors use the `DataFrameLoader` which means the data must fit in memory. Alternatively you can see the example of using the `BlazeLoader` in the `notebooks` directory.
+Sector and Industry data were scraped from Yahoo Finance on September 18, 2017 for the full Quandl WIKI universe at that time. The SIC and CIK codes were scraped from [Rank and Filed](http://rankandfiled.com/) on September 15, 2017. The classifiers built from this data assume that the codes have never and do never change (i.e., there is no concept of an asset being reclassified over time). **Be aware that there is lookahead bias in this** (e.g., a good example of why there is lookahead bias is with Corning, Inc. which is classified as a Technology/Electronic Components company in this dataset, but from 1851 to the 2000s(?) was actually classified as a boring Industrial glass company; the economic make up the company changed sometime in the early 1990s when optic fiber production became an important revenue driver and later with iPhone glass. At some point, the ICS providers changed the classification from "boring" to "high tech", but this was surely lagging the actual transformation of the company; hence...lookahead bias). There is no Fundamental data included in the package; the `Fundamentals` pipeline factors can be built from `make_fundamentals.py` with your own data. Note that these factors use the `DataFrameLoader` which means the data must fit in memory. Alternatively you can see the example of using the `BlazeLoader` in the `notebooks` directory.
 
 ## Disclaimer
 
@@ -122,7 +122,9 @@ Lastly, there are no automated tests (or any tests for that matter), no docstrin
 
 ## Contributing
 
-I hope you enjoy this package. Please leave feedback, or better, contribute. If you are planning to make a PR, please get in touch with me before you do any work. Things that would be awesome to work on (in order):
+I hope you enjoy this package. Please leave feedback, or better, contribute. If you are planning to make a PR, please get in touch with me before you do any work as I have a project plan. I am figuring this out as I go and could use help, especially with (in order)
 
-- incorporating `six` so that the package works with Python 3.x and Python 2.7
+- Incorporating `six` so that the package works with Python 3.x and Python 2.7
+- Creating tests and using Travis CI on this repo
+- Python packaging
 - Dockerizing this thing so we can avoid the painful install process
