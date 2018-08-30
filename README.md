@@ -48,7 +48,9 @@ To "Bring Your Own Data", you simply point the Factory object to an endpoint and
 }
 ```
 
-The `scheme` is specified in the `dshape` DSL from the package [`datashape`]() with docs [here](). Note that this data must be mapped to the `sid` as mapped by `zipline ingest`. (TODO: add `alphatools map <data_source> <output>`). You can then access this data like
+The `schema` is specified in the `dshape` DSL from the package [`datashape`]() with docs [here](). The magic happens via the `blaze/datashape/odo` stack. You can specify the `URL` to a huge variety of sources including `json`, `csv`, `postgresql`, `mongodb`, `bcolz`, Microsoft Excel(!?), `.gz` compressed files, collections of files (e.g., `myfiles_*.csv`), and remote locations like Amazon S3 and a Hadoop Distributed File System. To me, the `odo` [docs](http://odo.pydata.org/en/latest/uri.html) are the clearest on this.
+
+Note that this data must be mapped to the `sid` as mapped by `zipline ingest`. (TODO: add `alphatools map <data_source> <output>`). You can then access this data like
 
 ```python
 from alphatools.data import Factory
