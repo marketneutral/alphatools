@@ -1,7 +1,7 @@
 ![](https://user-images.githubusercontent.com/16124573/44810782-d0bd8b00-aba0-11e8-81f3-e4fe042c481d.png)
 
 
-This package provides convenience functions to help make the alpha factor research process more accessible. The convenience functions sit on top of [zipline]() and, specifically, the `Pipeline` cross-sectional classes and functions in that package. `alphatools` allows you to `run_pipeline` in a Jupyter notebook local to you and supports the easy creation of `Pipeline` factors on arbitrary data sources **at runtime**. In other words, just expose the endpoint for data sitting somewhere, specify the schema, and...it's available for use in `Pipeline`!
+This package provides convenience functions to help make the alpha factor research process more accessible. The convenience functions sit on top of [zipline]() and, specifically, the `Pipeline` cross-sectional classes and functions in that package. `alphatools` allows you to `run_pipeline` in a Jupyter notebook local to you and supports the easy creation of `Pipeline` factors **at runtime** on arbitrary data sources. In other words, just expose the endpoint for data sitting somewhere, specify the schema, and...it's available for use in `Pipeline`!
 
 For example, with `alphatools`, in a Jupyter notebook, you can
 
@@ -48,7 +48,7 @@ To "Bring Your Own Data", you simply point the Factory object to an endpoint and
 }
 ```
 
-The `schema` is specified in the `dshape` DSL from the package [`datashape`]() with docs [here](). The magic happens via the `blaze/datashape/odo` stack. You can specify the `URL` to a huge variety of sources including `json`, `csv`, `postgresql`, `mongodb`, `bcolz`, Microsoft Excel(!?), `.gz` compressed files, collections of files (e.g., `myfiles_*.csv`), and remote locations like Amazon S3 and a Hadoop Distributed File System. To me, the `odo` [docs](http://odo.pydata.org/en/latest/uri.html) are the clearest on this.
+The `schema` is specified in the `dshape` DSL from the package `datashape` with docs [here](). The magic happens via the `blaze/datashape/odo` stack. You can specify the `url` to a huge variety of source formats including `json`, `csv`, PostgreSQL tables, MongoDB collections, `bcolz`, Microsoft Excel(!?), `.gz` compressed files, collections of files (e.g., `myfiles_*.csv`), and remote locations like Amazon S3 and a Hadoop Distributed File System. To me, the `odo` [docs](http://odo.pydata.org/en/latest/uri.html) are the clearest on this.
 
 Note that this data must be mapped to the `sid` as mapped by `zipline ingest`. Also, the data date my be in a column titled `asof_date`. (TODO: add `alphatools map <data_source> <output>`). You can then access this data like
 
