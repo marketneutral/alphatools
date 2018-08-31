@@ -13,7 +13,8 @@ setup(
     install_requires=[
         'zipline<=1.3',
         'alphalens',
-        'ipykernel'
+        'ipykernel',
+        'lark-parser'
     ],
     entry_points={
         'console_scripts': [
