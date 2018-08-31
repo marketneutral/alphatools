@@ -18,7 +18,7 @@ grammar = r"""
     lag: "lag" "(" value "," SIGNED_NUMBER ")"
     mat1: "mat1"
     mat2: "mat2"
-    max: "max" "(" value ")"
+    max: "max" "(" value "," SIGNED_NUMBER ")"
     div: value "/" value
 
     %import common.SIGNED_NUMBER
@@ -43,13 +43,13 @@ class MyTransformer(Transformer):
     def mat1(self, items):
         thisv = self.vcounter.next()
         self.nplist.append(
-            "v" + str(thisv) + " = mat1[-1]"
+            "v" + str(thisv) + " = mat1"
         )
         
     def mat2(self, items):
         thisv = self.vcounter.next()
         self.nplist.append(
-            "v" + str(thisv) + " = mat2[-1]"
+            "v" + str(thisv) + " = mat2"
         )
 
     def div(self, items):
@@ -61,13 +61,13 @@ class MyTransformer(Transformer):
     def lag(self, items):
         thisv = self.vcounter.next()
         self.nplist.append(
-            "v" + str(thisv) + " = v" + str(thisv -1) + "[-" + items[1] + "]"
+            "v" + str(thisv) + " = v" + str(thisv -1) + "[-" + items[1] + ", :]"
         )
 
     def max(self, items):
         thisv = self.vcounter.next()
         self.nplist.append(
-            "v" + str(thisv) + " = np.max(v" + str(thisv-1) + ", axis=0)"
+            "v" + str(thisv) + " = np.max(v" + str(thisv-1) + "[-" + items[1] +":, :], axis=0)"
         )
 
     def transform(self, tree):
@@ -76,7 +76,7 @@ class MyTransformer(Transformer):
 
 my_parser = Lark(grammar, start='value')
 
-text = "max(mat1/mat2) / lag(mat1, 5)"
+text = "max(mat1/mat2, 20) / lag(mat1, 5)"
 tree = my_parser.parse(text)
 print(*MyTransformer().transform(tree), sep='\n')
 
