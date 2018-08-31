@@ -28,6 +28,9 @@ grammar = r"""
 
     """
 
+# I need some way to know when mat1 is ALONE, then then I need to
+# replace that with `delay(mat1, 1)` which will give mat1[-1]
+
 class MyTransformer(Transformer):
     vcounter = itertools.count()
 
