@@ -30,20 +30,26 @@ class MyTransformer(Transformer):
             'v' + str(thisv) + ' = np.apply_along_axis(rankdata, 1, ' + term1 +')'
         )
     
-    def close(self, items):
-        thisv = self.vcounter.next()
-        self.stack.append('v' + str(thisv))
-        self.cmdlist.append(
-            'v' + str(thisv) + ' = close'
-        )
-        
-    def opens(self, items):
-        thisv = self.vcounter.next()
-        self.stack.append('v' + str(thisv))
-        self.cmdlist.append(
-            'v' + str(thisv) + ' = opens'
-        )
+#    def close(self, items):
+#        thisv = self.vcounter.next()
+#        self.stack.append('v' + str(thisv))
+#        self.cmdlist.append(
+#            'v' + str(thisv) + ' = close'
+#        )
 
+    def close(self, items):
+        self.stack.append('close')
+        
+#    def opens(self, items):
+#        thisv = self.vcounter.next()
+#        self.stack.append('v' + str(thisv))
+#        self.cmdlist.append(
+#            'v' + str(thisv) + ' = opens'
+#        )
+
+    def opens(self, items):
+        self.stack.append('opens')
+                
     def div(self, items):
         term2 = self.stack.pop()
         term1 = self.stack.pop()
@@ -124,29 +130,36 @@ class ExpressionAlpha():
         fname = path.join(path.dirname(__file__), 'expression.lark')
         with open(fname, 'r') as grammar_file:
             self.grammar = grammar_file.read()
+        self._to_pipeline()
 
-    def to_pipeline(self):
+    def _to_pipeline(self):
         raw_np_list = self._parse()
-        
-        self.code = ['class ExprAlpha_1(CustomFactor):\n']
-        self.code.append("    inputs = [USEP.open, USEP.high, USEP.low, USEP.close]\n")
+
+        self.imports = ["from zipline.pipeline.data import USEquityPricing as USEP\n"]
+        self.imports.append("from zipline.pipeline.factors import CustomFactor\n")
+        self.imports.append("import numpy as np\n")
+        self.imports.append("from scipy.stats import rankdata\n\n")
+        self.code = ["class ExprAlpha_1(CustomFactor):"]
+        self.code.append("    inputs = [USEP.open, USEP.high, USEP.low, USEP.close]")
         self.code.append('    {0}'.format(raw_np_list[0]))
-        self.code.append("    def compute(self, today, assets, out, opens, high, low, close):\n")
+        self.code.append("    def compute(self, today, assets, out, opens, high, low, close):")
         lst = ['        {0}'.format(elem) for elem in raw_np_list]
 
         self.code = self.code + lst[1:]
+
+        self.imports = ''.join(self.imports)
+        
         self.code_string = '\n'.join(self.code)
-        self.final = autopep8.fix_code(self.code_string)
+        self.pipeline_code = autopep8.fix_code(self.code_string)
 
     def _parse(self):
         my_parser = Lark(self.grammar, start='value')
         self.tree = my_parser.parse(self.expr_string)
         return(MyTransformer().transform(self.tree))
 
-    def _make_code(self):
-        pass
+
 
 if __name__ == '__main__':
     e = ExpressionAlpha('close/delay(opens,1)')
     e.to_pipeline()
-    print(e.final)
+    print(e.pipeline_code)
