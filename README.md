@@ -74,6 +74,19 @@ p.add(my_factor)
 
 This functionality should allow you to use new data in research very quickly with the absolute minimal amount of data engineering and/or munging. For example, commercial risk model providers often provide a single file per day for factor loadings (e.g., `data_yyyymmdd_fac.csv`). After `sid` mapping and converting the date column name to `asof_date`,  this data can be immediately available in `Pipeline` by putting a `url` in `data_sources.json` like `"url": "/path/to/dir/data_*_fac.csv"`, and `schema` like `"var * {asof_date: datetime, sid: int64, MKT_BETA: float64, VALUE: float64, MOMENTUM: float64, ST_REVERSAL: float64 ..."`.
 
+## Expression Alphas
+
+The ability to parse "expression" alphas is meant to help speed the research process and/or allow non-Python literate financial professionals to test alpha ideas. See  ["101 Formulaic Alphas"](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2701346) for details on this DSL. The (EBNF) grammar is fully specified ["here"](https://github.com/marketneutral/alphatools/blob/master/alphatools/expression/expression.lark). We use the `Lark` Python parsing library (great name, no relation). Currently, the data for `open`, `high`, `low`, `close` is accessible; the following operators are implemented
+
+* `delay(*d*, *days*)`: *d* lagged by *days*.
+* `ts_max(*d*, *days*)`: the per asset time series max on *d* over the trailing *days* (also `ts_min(...)`). Implemented as `np.nanmax(...)`.
+* `rank(*d*)`: ranks, per day, across all assets.
+* `sum(*d*, *days*)`: the sum per asset on *d* over the trailing *days*. Implemented as `np.nansum(...)`.
+* `*`, `/`: multiplication and division operators.
+* `-*d*`: unary minus (i.e., negation).
+
+
+
 ## Installation
 
 These install steps worked for me on Max OS X. Minimally you need a proper install of `zipline`. Zipline is built against certain version of `numpy` and `pandas` which can make it tricky. For example, if you want to use `scikit-learn` you have to compile it versus that `numpy` version specifically (needing `gcc` via Apple dev tools or via `brew`). Currently this package has been developed for Python 2.7. The install process that worked for me is as follows.
