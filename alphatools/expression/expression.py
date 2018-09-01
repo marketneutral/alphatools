@@ -36,9 +36,21 @@ class MyTransformer(Transformer):
 #        self.cmdlist.append(
 #            'v' + str(thisv) + ' = close'
 #        )
+    def number(self, items):
+        import pdb; pdb.set_trace()
+        pass
 
     def close(self, items):
         self.stack.append('close')
+
+    def high(self, items):
+        self.stack.append('high')
+
+    def low(self, items):
+        self.stack.append('low')
+        
+    def volume(self, items):
+        self.stack.append('volume')
         
 #    def opens(self, items):
 #        thisv = self.vcounter.next()
@@ -57,6 +69,24 @@ class MyTransformer(Transformer):
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
             'v' + str(thisv) + ' = ' + term1 + '/' + term2
+        )
+
+    def minus(self, items):
+        term2 = self.stack.pop()
+        term1 = self.stack.pop()
+        thisv = self.vcounter.next()
+        self.stack.append('v' + str(thisv))
+        self.cmdlist.append(
+            'v' + str(thisv) + ' = ' + term1 + '-' + term2
+        )
+
+    def plus(self, items):
+        term2 = self.stack.pop()
+        term1 = self.stack.pop()
+        thisv = self.vcounter.next()
+        self.stack.append('v' + str(thisv))
+        self.cmdlist.append(
+            'v' + str(thisv) + ' = ' + term1 + '+' + term2
         )
 
     def mult(self, items):
@@ -85,6 +115,25 @@ class MyTransformer(Transformer):
             'v' + str(thisv) + ' = np.roll(' + term1 + ', ' + items[1] + ')'
         )
 
+    def returns(self, items):
+        thisv = self.vcounter.next()
+        self.window = self.window+1
+        self.stack.append('v' + str(thisv))
+        self.cmdlist.append(
+            'v' + str(thisv) + ' = np.log(close/np.roll(close, 1))'
+        )
+
+        
+    def delta(self, items):
+        term1 = self.stack.pop()
+        thisv = self.vcounter.next()
+        self.window = self.window+int(items[1])
+        self.stack.append('v' + str(thisv))
+        self.cmdlist.append(
+            'v' + str(thisv) + ' = '+term1+' - np.roll(' + term1 + ', ' + items[1] + ')'
+        )
+
+        
     def ts_max(self, items):
         v1 = self.stack.pop()
         thisv = self.vcounter.next()
@@ -143,9 +192,9 @@ class ExpressionAlpha():
         self.imports.append("import numpy as np\n")
         self.imports.append("from scipy.stats import rankdata\n\n")
         self.code = ["class ExprAlpha_1(CustomFactor):"]
-        self.code.append("    inputs = [USEP.open, USEP.high, USEP.low, USEP.close]")
+        self.code.append("    inputs = [USEP.open, USEP.high, USEP.low, USEP.close, USEP.volume]")
         self.code.append('    {0}'.format(raw_np_list[0]))
-        self.code.append("    def compute(self, today, assets, out, opens, high, low, close):")
+        self.code.append("    def compute(self, today, assets, out, opens, high, low, close, volume):")
         lst = ['        {0}'.format(elem) for elem in raw_np_list]
 
         self.code = self.code + lst[1:]

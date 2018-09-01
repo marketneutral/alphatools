@@ -8,9 +8,14 @@
       | opens
       | high
       | low
+      | volume
+      | returns
       | delay
+      | delta
       | div
       | mult
+      | minus
+      | plus
       | neg
       | rank
       | sum
@@ -18,16 +23,23 @@
       | ESCAPED_STRING
 
 delay: "delay" "(" value "," SIGNED_NUMBER ")"
+delta: "delta" "(" value "," SIGNED_NUMBER ")"
 
 close: "close"
 opens: "opens"
 high: "high"
 low: "low"
+volume: "volume"
+returns: "returns"
+
+number: SIGNED_NUMBER
 
 ts_max: "ts_max" "(" value "," SIGNED_NUMBER ")"
 ts_min: "ts_min" "(" value "," SIGNED_NUMBER ")"
 
 div: value "/" value
+minus: value "-" value
+plus: value "+" value
 mult: value "*" value
 log: "log" "(" value ")"
 neg: "-" value
