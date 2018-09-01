@@ -1,6 +1,6 @@
 ![](https://user-images.githubusercontent.com/16124573/44810782-d0bd8b00-aba0-11e8-81f3-e4fe042c481d.png)
 
-This package provides convenience functions to help make the alpha factor research process more accessible. The convenience functions sit on top of [zipline]() and, specifically, the `Pipeline` cross-sectional classes and functions in that package. `alphatools` allows you to `run_pipeline` in a Jupyter notebook local to you and supports the easy creation of `Pipeline` factors **at runtime** on **arbitrary data sources**. In other words, just expose the endpoint for data sitting somewhere, specify the schema, and...it's available for use in `Pipeline`!
+This package provides convenience functions to help make the alpha factor research process more accessible. The convenience functions sit on top of [zipline]() and, specifically, the `Pipeline` cross-sectional classes and functions in that package. `alphatools` allows you to `run_pipeline` in a Jupyter notebook local to you and supports the easy creation of `Pipeline` factors **at runtime** on **arbitrary data sources**. In other words, just expose the endpoint for data sitting somewhere, specify the schema, and...it's available for use in `Pipeline`! Additionally, you can **parse "expression" style alphas** per the paper ["101 Formulaic Alphas"](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2701346) into `Pipeline` factors. This feature is experimental and the complete grammar has not yet been implemented.
 
 For example, with `alphatools`, in a Jupyter notebook, you can
 
@@ -8,6 +8,7 @@ For example, with `alphatools`, in a Jupyter notebook, you can
 from alphatools.research import run_pipeline
 from alphatools.ics import Sector
 from alphatools.data import Factory
+from alphatools.expression import ExpressionAlpha
 from zipline.pipeline.data import USEquityPricing as USEP
 from zipline.pipeline.factors import Returns, AverageDollarVolume
 from zipline.pipeline import Pipeline
@@ -20,12 +21,17 @@ my_factor = (
     rank()
 )
 
+expr_factor = (
+    ExpressionAlpha('rank(log(close/delay(close, 5)))').
+    pipeline_factor(mask=universe)
+)
+
 p = Pipeline(screen=universe)
 
 p.add(my_factor, '5d_MR_Sector_Neutral_Rank')
-p.add(Sector(), 'Sector')
+p.add(expr_factor, 'Expression Alpha')
 
-p.add(Factory['my_special_data'].value.latest.zscore(), 'PB')
+p.add(Factory['my_special_data'].value.latest.zscore(), 'Special_Factor')
 
 start_date = '2017-01-04'
 end_date = '2017-12-28'

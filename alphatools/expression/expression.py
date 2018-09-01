@@ -131,6 +131,9 @@ class ExpressionAlpha():
         with open(fname, 'r') as grammar_file:
             self.grammar = grammar_file.read()
         self._to_pipeline()
+        exec(self.imports, globals(), globals())
+        exec(self.pipeline_code, globals(), globals())
+        self.pipeline_factor = ExprAlpha_1
 
     def _to_pipeline(self):
         raw_np_list = self._parse()
@@ -151,6 +154,7 @@ class ExpressionAlpha():
         
         self.code_string = '\n'.join(self.code)
         self.pipeline_code = autopep8.fix_code(self.code_string)
+        
 
     def _parse(self):
         my_parser = Lark(self.grammar, start='value')
