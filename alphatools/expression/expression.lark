@@ -1,0 +1,40 @@
+// Lark grammar for "expression"-based alphas
+
+?value: "(" value ")"
+      | log
+      | ts_max
+      | ts_min
+      | close
+      | opens
+      | high
+      | low
+      | delay
+      | div
+      | mult
+      | neg
+      | rank
+      | sum
+      | SIGNED_NUMBER
+      | ESCAPED_STRING
+
+delay: "delay" "(" value "," SIGNED_NUMBER ")"
+
+close: "close"
+opens: "opens"
+high: "high"
+low: "low"
+
+ts_max: "ts_max" "(" value "," SIGNED_NUMBER ")"
+ts_min: "ts_min" "(" value "," SIGNED_NUMBER ")"
+
+div: value "/" value
+mult: value "*" value
+log: "log" "(" value ")"
+neg: "-" value
+rank: "rank" "(" value ")"
+sum: "sum" "(" value "," SIGNED_NUMBER ")"
+
+%import common.SIGNED_NUMBER
+%import common.ESCAPED_STRING
+%import common.WS
+%ignore WS
