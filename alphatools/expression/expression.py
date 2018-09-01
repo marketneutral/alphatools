@@ -113,7 +113,7 @@ class MyTransformer(Transformer):
             'out[:] = ' + v1 + '[-1]'
         )
         
-        return ['window_length = '+str(self.window)] + self.cmdlist
+        return ["window_length = "+str(self.window)] + self.cmdlist
 
 
 class ExpressionAlpha():
@@ -127,13 +127,15 @@ class ExpressionAlpha():
 
     def to_pipeline(self):
         raw_np_list = self._parse()
+        
         self.code = ['class ExprAlpha_1(CustomFactor):\n']
         self.code.append("    inputs = [USEP.open, USEP.high, USEP.low, USEP.close]\n")
-        self.code.append('    '.join(raw_np_list[0]))
-        self.code.append("def compute(self, today, assets, out, opens, high, low, close):\n")
-        self.code = self.code + raw_np_list[1:]
+        self.code.append('    {0}'.format(raw_np_list[0]))
+        self.code.append("    def compute(self, today, assets, out, opens, high, low, close):\n")
+        lst = ['        {0}'.format(elem) for elem in raw_np_list]
+
+        self.code = self.code + lst[1:]
         self.code_string = '\n'.join(self.code)
-        import pdb; pdb.set_trace()
         self.final = autopep8.fix_code(self.code_string)
 
     def _parse(self):

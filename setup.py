@@ -14,7 +14,8 @@ setup(
         'zipline<=1.3',
         'alphalens',
         'ipykernel',
-        'lark-parser'
+        'lark-parser',
+        'autopep8'
     ],
     entry_points={
         'console_scripts': [
