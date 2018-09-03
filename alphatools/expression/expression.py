@@ -37,8 +37,8 @@ class MyTransformer(Transformer):
 #            'v' + str(thisv) + ' = close'
 #        )
     def number(self, items):
-        #import pdb; pdb.set_trace()
-        self.stack.append(items[0].value)
+        import pdb; pdb.set_trace()
+        self.stack.append(str(items[0].value))
         pass
 
     def close(self, items):
@@ -187,13 +187,28 @@ class ExpressionAlpha():
         fname = path.join(path.dirname(__file__), 'expression.lark')
         with open(fname, 'r') as grammar_file:
             self.grammar = grammar_file.read()
-        self._to_pipeline()
+
+    def pipeline_factor(self):
+        self.parse()
+        self.transform()
+        self.generate_pipeline_code()
+        self.make_pipeline_factor()
+        return self.pipeline_factor
+    
+    def parse(self):
+        my_parser = Lark(self.grammar, start='value')
+        self.tree = my_parser.parse(self.expr_string)
+
+    def transform(self):
+        self.raw_np_list = MyTransformer().transform(self.tree)
+
+    def make_pipeline_factor(self):
         exec(self.imports, globals(), globals())
         exec(self.pipeline_code, globals(), globals())
         self.pipeline_factor = ExprAlpha_1
-
-    def _to_pipeline(self):
-        raw_np_list = self._parse()
+        
+    def generate_pipeline_code(self):
+        raw_np_list = self.raw_np_list
 
         self.imports = ["from zipline.pipeline.data import USEquityPricing as USEP\n"]
         self.imports.append("from zipline.pipeline.factors import CustomFactor, Returns\n")
@@ -212,13 +227,6 @@ class ExpressionAlpha():
         
         self.code_string = '\n'.join(self.code)
         self.pipeline_code = autopep8.fix_code(self.code_string)
-        
-
-    def _parse(self):
-        my_parser = Lark(self.grammar, start='value')
-        self.tree = my_parser.parse(self.expr_string)
-        return(MyTransformer().transform(self.tree))
-
 
 
 if __name__ == '__main__':
