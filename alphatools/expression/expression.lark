@@ -19,6 +19,7 @@
       | neg
       | rank
       | sum
+      | number
       | SIGNED_NUMBER
       | ESCAPED_STRING
 

@@ -37,10 +37,12 @@ class MyTransformer(Transformer):
 #            'v' + str(thisv) + ' = close'
 #        )
     def number(self, items):
-        import pdb; pdb.set_trace()
+        #import pdb; pdb.set_trace()
+        self.stack.append(items[0].value)
         pass
 
     def close(self, items):
+        #import pdb; pdb.set_trace()
         self.stack.append('close')
 
     def high(self, items):
@@ -68,7 +70,7 @@ class MyTransformer(Transformer):
         thisv = self.vcounter.next()
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
-            'v' + str(thisv) + ' = ' + term1 + '/' + term2
+            'v' + str(thisv) + ' = ' + term1 + ' / ' + term2
         )
 
     def minus(self, items):
@@ -77,7 +79,7 @@ class MyTransformer(Transformer):
         thisv = self.vcounter.next()
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
-            'v' + str(thisv) + ' = ' + term1 + '-' + term2
+            'v' + str(thisv) + ' = ' + term1 + ' - ' + term2
         )
 
     def plus(self, items):
@@ -86,7 +88,7 @@ class MyTransformer(Transformer):
         thisv = self.vcounter.next()
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
-            'v' + str(thisv) + ' = ' + term1 + '+' + term2
+            'v' + str(thisv) + ' = ' + term1 + ' + ' + term2
         )
 
     def mult(self, items):
@@ -116,12 +118,13 @@ class MyTransformer(Transformer):
         )
 
     def returns(self, items):
-        thisv = self.vcounter.next()
-        self.window = self.window+1
-        self.stack.append('v' + str(thisv))
-        self.cmdlist.append(
-            'v' + str(thisv) + ' = np.log(close/np.roll(close, 1))'
-        )
+        self.stack.append('returns')
+        #thisv = self.vcounter.next()
+        #self.window = self.window+1
+        #self.stack.append('v' + str(thisv))
+        #self.cmdlist.append(
+        #    'v' + str(thisv) + ' = np.log(close/np.roll(close, 1))'
+        #)
 
         
     def delta(self, items):
@@ -158,8 +161,13 @@ class MyTransformer(Transformer):
         self.window = self.window + int(items[1])
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
-            'v' + str(thisv) + ' = np.nansum(' + v1 + '[-' + items[1] +':, :], axis=0)'
+            'v' + str(thisv) + ' = pd.DataFrame(data='+v1+').rolling(window='+items[1]+', center=False, min_periods=1).sum().values'
         )
+        
+        
+        #self.cmdlist.append(
+        #    'v' + str(thisv) + ' = np.nansum(' + v1 + '[-' + items[1] +':, :], axis=0)'
+        #)
         
     def transform(self, tree):
         self._transform_tree(tree)
@@ -188,13 +196,14 @@ class ExpressionAlpha():
         raw_np_list = self._parse()
 
         self.imports = ["from zipline.pipeline.data import USEquityPricing as USEP\n"]
-        self.imports.append("from zipline.pipeline.factors import CustomFactor\n")
+        self.imports.append("from zipline.pipeline.factors import CustomFactor, Returns\n")
         self.imports.append("import numpy as np\n")
+        self.imports.append("import pandas as pd\n")
         self.imports.append("from scipy.stats import rankdata\n\n")
         self.code = ["class ExprAlpha_1(CustomFactor):"]
-        self.code.append("    inputs = [USEP.open, USEP.high, USEP.low, USEP.close, USEP.volume]")
+        self.code.append("    inputs = [Returns(window_length=2), USEP.open, USEP.high, USEP.low, USEP.close, USEP.volume]")
         self.code.append('    {0}'.format(raw_np_list[0]))
-        self.code.append("    def compute(self, today, assets, out, opens, high, low, close, volume):")
+        self.code.append("    def compute(self, today, assets, out, returns, opens, high, low, close, volume):")
         lst = ['        {0}'.format(elem) for elem in raw_np_list]
 
         self.code = self.code + lst[1:]

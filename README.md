@@ -84,7 +84,7 @@ The ability to parse "expression" alphas is meant to help speed the research pro
 * `ts_max(d, days)`: the per asset time series max on *d* over the trailing *days* (also `ts_min(...)`).
 * `rank(d)`: ranks, per day, across all assets (i.e., the cross-sectional rank).
 * `sum(d, days)`: the sum per asset on *d* over the trailing *days*.
-* `*`, `/`: multiplication and division operators.
+* `+`,`-`, `*`, `/`: as expected
 * `-d`: unary minus (i.e., negation).
 
 
