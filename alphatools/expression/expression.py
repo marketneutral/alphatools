@@ -37,7 +37,7 @@ class MyTransformer(Transformer):
 #            'v' + str(thisv) + ' = close'
 #        )
     def number(self, items):
-        import pdb; pdb.set_trace()
+        #import pdb; pdb.set_trace()
         self.stack.append(str(items[0].value))
         pass
 
@@ -192,7 +192,9 @@ class ExpressionAlpha():
         self.parse()
         self.transform()
         self.generate_pipeline_code()
-        self.make_pipeline_factor()
+        exec(self.imports, globals(), globals())
+        exec(self.pipeline_code, globals(), globals())
+        self.pipeline_factor = ExprAlpha_1
         return self.pipeline_factor
     
     def parse(self):
@@ -202,11 +204,6 @@ class ExpressionAlpha():
     def transform(self):
         self.raw_np_list = MyTransformer().transform(self.tree)
 
-    def make_pipeline_factor(self):
-        exec(self.imports, globals(), globals())
-        exec(self.pipeline_code, globals(), globals())
-        self.pipeline_factor = ExprAlpha_1
-        
     def generate_pipeline_code(self):
         raw_np_list = self.raw_np_list
 

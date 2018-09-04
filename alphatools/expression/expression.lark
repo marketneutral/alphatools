@@ -20,7 +20,7 @@
       | rank
       | sum
       | number
-      | SIGNED_NUMBER
+      | SIGNED_NUMBER     -> number
       | ESCAPED_STRING
 
 delay: "delay" "(" value "," SIGNED_NUMBER ")"
