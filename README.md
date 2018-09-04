@@ -87,6 +87,7 @@ The ability to parse "expression" alphas is meant to help speed the research pro
 * `+`,`-`, `*`, `/`: as expected
 * `-d`: unary minus (i.e., negation).
 
+The expression alpha parser produces `zipline` compatible `Pipeline` factor code. Note however, this implementation makes use of the `bottleneck` package which provides many `numpy`-style rolling aggregations, implemented in highly optimized compiled C code. The `bottleneck` package is distributed in compiled form in the Anaconda Python distribution (see Installation below).
 
 ## Installation
 

@@ -245,6 +245,46 @@ class MyTransformer(Transformer):
             'v' + str(thisv) + ' = bn.move_min(' + v1 + ', window=' + items[1] + ', min_count=1,  axis=0)'
         )
 
+    def ts_argmax(self, items):
+        # check that the day is what we want
+        v1 = self.stack.pop()
+        thisv = self.vcounter.next()
+        self.window = self.window + int(items[1])
+        self.stack.append('v' + str(thisv))
+        self.cmdlist.append(
+            'v' + str(thisv) + ' = bn.move_argmax(' + v1 + ', window=' + items[1] + ', min_count=1,  axis=0)'
+        )
+
+    def ts_argmin(self, items):
+        # check that the day is what we want
+        v1 = self.stack.pop()
+        thisv = self.vcounter.next()
+        self.window = self.window + int(items[1])
+        self.stack.append('v' + str(thisv))
+        self.cmdlist.append(
+            'v' + str(thisv) + ' = bn.move_argmin(' + v1 + ', window=' + items[1] + ', min_count=1,  axis=0)'
+        )
+
+    def ts_rank(self, items):
+        # check that the day is what we want
+        v1 = self.stack.pop()
+        thisv = self.vcounter.next()
+        self.window = self.window + int(items[1])
+        self.stack.append('v' + str(thisv))
+        self.cmdlist.append(
+            'v' + str(thisv) + ' = bn.move_rank(' + v1 + ', window=' + items[1] + ', min_count=1,  axis=0)'
+        )
+        
+    def stddev(self, items):
+        # check that the day is what we want
+        v1 = self.stack.pop()
+        thisv = self.vcounter.next()
+        self.window = self.window + int(items[1])
+        self.stack.append('v' + str(thisv))
+        self.cmdlist.append(
+            'v' + str(thisv) + ' = bn.move_std(' + v1 + ', window=' + items[1] + ', min_count=1,  axis=0)'
+        )
+
     def sum(self, items):
         v1 = self.stack.pop()
         thisv = self.vcounter.next()

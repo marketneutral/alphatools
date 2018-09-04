@@ -15,7 +15,8 @@ setup(
         'alphalens',
         'ipykernel',
         'lark-parser',
-        'autopep8'
+        'autopep8',
+        'bottleneck'
     ],
     entry_points={
         'console_scripts': [
