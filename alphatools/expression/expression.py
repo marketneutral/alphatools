@@ -233,7 +233,7 @@ class MyTransformer(Transformer):
         self.window = self.window + int(items[1])
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
-            'v' + str(thisv) + ' = np.nanmax(' + v1 + '[-' + items[1] +':, :], axis=0)'
+            'v' + str(thisv) + ' = bn.move_max(' + v1 + ', window=' + items[1] + ', min_count=1,  axis=0)'
         )
 
     def ts_min(self, items):
@@ -242,7 +242,7 @@ class MyTransformer(Transformer):
         self.window = self.window + int(items[1])
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
-            'v' + str(thisv) + ' = np.nanmin(' + v1 + '[-' + items[1] +':, :], axis=0)'
+            'v' + str(thisv) + ' = bn.move_min(' + v1 + ', window=' + items[1] + ', min_count=1,  axis=0)'
         )
 
     def sum(self, items):
@@ -313,6 +313,7 @@ class ExpressionAlpha():
         self.imports = ["from zipline.pipeline.data import USEquityPricing as USEP\n"]
         self.imports.append("from zipline.pipeline.factors import CustomFactor, Returns\n")
         self.imports.append("import numpy as np\n")
+        self.imports.append("import bottleneck as bn\n")
         self.imports.append("import pandas as pd\n")
         self.imports.append("from scipy.stats import rankdata\n\n")
         self.code = ["class ExprAlpha_1(CustomFactor):"]
