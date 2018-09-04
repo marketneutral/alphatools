@@ -188,21 +188,23 @@ class ExpressionAlpha():
         with open(fname, 'r') as grammar_file:
             self.grammar = grammar_file.read()
 
-    def pipeline_factor(self):
+    def make_pipeline_factor(self):
         self.parse()
         self.transform()
         self.generate_pipeline_code()
         exec(self.imports, globals(), globals())
         exec(self.pipeline_code, globals(), globals())
         self.pipeline_factor = ExprAlpha_1
-        return self.pipeline_factor
+        return self
     
     def parse(self):
         my_parser = Lark(self.grammar, start='value')
         self.tree = my_parser.parse(self.expr_string)
+        return self
 
     def transform(self):
         self.raw_np_list = MyTransformer().transform(self.tree)
+        return self
 
     def generate_pipeline_code(self):
         raw_np_list = self.raw_np_list
@@ -224,7 +226,7 @@ class ExpressionAlpha():
         
         self.code_string = '\n'.join(self.code)
         self.pipeline_code = autopep8.fix_code(self.code_string)
-
+        return self
 
 if __name__ == '__main__':
     e = ExpressionAlpha('close/delay(opens,1)')
