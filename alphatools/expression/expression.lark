@@ -9,6 +9,7 @@
       | equals
       | logicalor
       | ternary
+      | scale
       | ts_max
       | ts_min
       | close
@@ -58,6 +59,7 @@ lessthan: value "<" value
 equals: value "==" value
 logicalor: value "||" value
 ternary: value "?" value ":" value
+scale: "scale" "(" value ")"
 
 neg: "-" value
 rank: "rank" "(" value ")"

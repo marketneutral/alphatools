@@ -123,7 +123,15 @@ class MyTransformer(Transformer):
         self.cmdlist.append(
             'v' + str(thisv) + ' = np.sign(' + term1 + ')'
         )
-
+        
+    def scale(self, items):
+        term1 = self.stack.pop()
+        thisv = self.vcounter.next()
+        self.stack.append('v' + str(thisv))
+        self.cmdlist.append(
+            'v' + str(thisv) + ' = np.apply_along_axis(lambda x: (x - np.nanmean(x))/np.nansum(np.abs(x - np.nanmean(x))), 1, ' + term1 +')'
+        )
+        
     def mult(self, items):
         term2 = self.stack.pop()
         term1 = self.stack.pop()
