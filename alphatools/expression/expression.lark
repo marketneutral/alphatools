@@ -10,6 +10,8 @@
       | logicalor
       | ternary
       | scale
+      | signedpower
+      | linear_decay
       | ts_max
       | ts_min
       | close
@@ -60,6 +62,8 @@ equals: value "==" value
 logicalor: value "||" value
 ternary: value "?" value ":" value
 scale: "scale" "(" value ")"
+signedpower: "signedpower" "(" value ", " value ")"
+linear_decay: "linear_decay" "(" value ", " SIGNED_NUMBER ")"
 
 neg: "-" value
 rank: "rank" "(" value ")"

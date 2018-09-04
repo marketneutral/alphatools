@@ -73,6 +73,18 @@ class MyTransformer(Transformer):
             'v' + str(thisv) + ' = ' + term1 + ' / ' + term2
         )
 
+    def signedpower(self, items):
+        """ Element-wise power """
+
+        term2 = self.stack.pop()
+        term1 = self.stack.pop()
+        thisv = self.vcounter.next()
+        self.stack.append('v' + str(thisv))
+        self.cmdlist.append(
+            'v' + str(thisv) + ' = np.power(' + term1 + ', ' + term2 + ')'
+        )
+
+
     def minus(self, items):
         term2 = self.stack.pop()
         term1 = self.stack.pop()
@@ -241,11 +253,22 @@ class MyTransformer(Transformer):
         self.cmdlist.append(
             'v' + str(thisv) + ' = pd.DataFrame(data='+v1+').rolling(window='+items[1]+', center=False, min_periods=1).sum().values'
         )
-        
-        
-        #self.cmdlist.append(
-        #    'v' + str(thisv) + ' = np.nansum(' + v1 + '[-' + items[1] +':, :], axis=0)'
-        #)
+
+    def linear_decay(self, items):
+        v1 = self.stack.pop()
+        thisv = self.vcounter.next()
+        days = int(items[1])
+        self.window = self.window + days
+        v2 = 'v'+str(thisv)
+        self.cmdlist.append(
+            v2 + ' = (np.arange(' + items[1] + ')+1)/np.sum(np.arange(' + items[1]+ ')+1)'
+        )
+        thisv = self.vcounter.next()
+        self.stack.append('v' + str(thisv))
+
+        self.cmdlist.append(
+            'v' + str(thisv) + ' = pd.DataFrame(data='+v1+').rolling(window='+items[1]+', center=False, min_periods=1).apply(lambda x: (x*'+v2+').sum()).values'
+        )
         
     def transform(self, tree):
         self._transform_tree(tree)
@@ -286,7 +309,7 @@ class ExpressionAlpha():
 
     def generate_pipeline_code(self):
         raw_np_list = self.raw_np_list
-
+# from __future__ import division
         self.imports = ["from zipline.pipeline.data import USEquityPricing as USEP\n"]
         self.imports.append("from zipline.pipeline.factors import CustomFactor, Returns\n")
         self.imports.append("import numpy as np\n")
