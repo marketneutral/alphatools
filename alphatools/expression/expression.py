@@ -107,23 +107,85 @@ class MyTransformer(Transformer):
         self.cmdlist.append(
             'v' + str(thisv) + ' = np.log(' + term1 + ')'
         )
-        
-    def delay(self, items):
+
+    def abs(self, items):
         term1 = self.stack.pop()
         thisv = self.vcounter.next()
-        self.window = self.window+int(items[1])
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
-            'v' + str(thisv) + ' = np.roll(' + term1 + ', ' + items[1] + ')'
+            'v' + str(thisv) + ' = np.abs(' + term1 + ')'
         )
 
+    def sign(self, items):
+        term1 = self.stack.pop()
+        thisv = self.vcounter.next()
+        self.stack.append('v' + str(thisv))
+        self.cmdlist.append(
+            'v' + str(thisv) + ' = np.sign(' + term1 + ')'
+        )
+
+    def mult(self, items):
+        term2 = self.stack.pop()
+        term1 = self.stack.pop()
+        thisv = self.vcounter.next()
+        self.stack.append('v' + str(thisv))
+        self.cmdlist.append(
+            'v' + str(thisv) + ' = ' + term1 + '*' + term2
+        )
+        
+    def greaterthan(self, items):
+        term2 = self.stack.pop()
+        term1 = self.stack.pop()
+        thisv = self.vcounter.next()
+        self.stack.append('v' + str(thisv))
+        self.cmdlist.append(
+            'v' + str(thisv) + ' = np.greater(' + term1 + ', ' + term2 + ')'
+        )
+
+    def lessthan(self, items):
+        term2 = self.stack.pop()
+        term1 = self.stack.pop()
+        thisv = self.vcounter.next()
+        self.stack.append('v' + str(thisv))
+        self.cmdlist.append(
+            'v' + str(thisv) + ' = np.less(' + term1 + ', ' + term2 + ')'
+        )
+
+    def equals(self, items):
+        term2 = self.stack.pop()
+        term1 = self.stack.pop()
+        thisv = self.vcounter.next()
+        self.stack.append('v' + str(thisv))
+        self.cmdlist.append(
+            'v' + str(thisv) + ' = np.isclose(' + term1 + ', ' + term2 + ')'
+        )
+
+    def logicalor(self, items):
+        term2 = self.stack.pop()
+        term1 = self.stack.pop()
+        thisv = self.vcounter.next()
+        self.stack.append('v' + str(thisv))
+        self.cmdlist.append(
+            'v' + str(thisv) + ' = np.logical_or(' + term1 + ', ' + term2 + ')'
+        )
+
+    def ternary(self, items):
+        term3 = self.stack.pop()
+        term2 = self.stack.pop()
+        term1 = self.stack.pop()
+        thisv = self.vcounter.next()
+        self.stack.append('v' + str(thisv))
+        self.cmdlist.append(
+            'v' + str(thisv) + ' = np.where(' + term1 + ', ' + term2 + ', ' + term3 + ')'
+        )
+        
     def returns(self, items):
         self.stack.append('returns')
         #thisv = self.vcounter.next()
         #self.window = self.window+1
         #self.stack.append('v' + str(thisv))
         #self.cmdlist.append(
-        #    'v' + str(thisv) + ' = np.log(close/np.roll(close, 1))'
+        #    'v' + str(thisv) + ' = np.log(close/np.roll(close, 1, axis=0))'
         #)
 
         
@@ -133,9 +195,17 @@ class MyTransformer(Transformer):
         self.window = self.window+int(items[1])
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
-            'v' + str(thisv) + ' = '+term1+' - np.roll(' + term1 + ', ' + items[1] + ')'
+            'v' + str(thisv) + ' = '+term1+' - np.roll(' + term1 + ', ' + items[1] + ', axis=0)'
         )
 
+    def delay(self, items):
+        term1 = self.stack.pop()
+        thisv = self.vcounter.next()
+        self.window = self.window+int(items[1])
+        self.stack.append('v' + str(thisv))
+        self.cmdlist.append(
+            'v' + str(thisv) + ' = np.roll(' + term1 + ', ' + items[1] + ', axis=0)'
+        )
         
     def ts_max(self, items):
         v1 = self.stack.pop()

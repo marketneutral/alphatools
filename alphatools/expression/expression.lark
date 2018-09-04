@@ -1,7 +1,14 @@
 // Lark grammar for "expression"-based alphas
 
 ?value: "(" value ")"
+      | abs
       | log
+      | sign
+      | greaterthan
+      | lessthan
+      | equals
+      | logicalor
+      | ternary
       | ts_max
       | ts_min
       | close
@@ -42,7 +49,16 @@ div: value "/" value
 minus: value "-" value
 plus: value "+" value
 mult: value "*" value
+
+abs: "abs" "(" value ")"
 log: "log" "(" value ")"
+sign: "sign" "(" value ")"
+greaterthan: value ">" value
+lessthan: value "<" value
+equals: value "==" value
+logicalor: value "||" value
+ternary: value "?" value ":" value
+
 neg: "-" value
 rank: "rank" "(" value ")"
 sum: "sum" "(" value "," SIGNED_NUMBER ")"
