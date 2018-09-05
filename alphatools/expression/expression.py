@@ -7,12 +7,13 @@ from scipy.stats import rankdata
 
 
 class MyTransformer(Transformer):
-    vcounter = itertools.count()
-    stack = []
     
     def __init__(self):
         self.cmdlist = []
         self.window = 2
+        self.vcounter = itertools.count()
+        self.stack = []
+
 
     def neg(self, items):
         term1 = self.stack.pop()
