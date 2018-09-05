@@ -24,6 +24,7 @@
       | low
       | volume
       | returns
+      | adv
       | vwap
       | delay
       | correlation
@@ -54,6 +55,7 @@ low: "low"
 volume: "volume"
 returns: "returns"
 vwap: "vwap"
+adv: "adv" SIGNED_NUMBER
 
 number: SIGNED_NUMBER
 

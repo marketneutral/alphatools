@@ -9,10 +9,10 @@ from scipy.stats import rankdata
 class MyTransformer(Transformer):
     vcounter = itertools.count()
     stack = []
-    window = 2
     
     def __init__(self):
         self.cmdlist = []
+        self.window = 2
 
     def neg(self, items):
         term1 = self.stack.pop()
@@ -59,6 +59,14 @@ class MyTransformer(Transformer):
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
             'v' + str(thisv) + ' = (close + (opens + high + low)/3)/2'
+        )
+
+    def adv(self, items):
+        thisv = self.vcounter.next()
+        self.stack.append('v' + str(thisv))
+        self.window = max([self.window, int(items[0])+2])
+        self.cmdlist.append(
+            'v' + str(thisv) + ' = bn.move_mean(np.multiply(close, volume), window=' + items[0] + ', min_count=1, axis=0)'
         )
 #    def opens(self, items):
 #        thisv = self.vcounter.next()
