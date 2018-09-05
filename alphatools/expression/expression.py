@@ -356,23 +356,71 @@ class MyTransformer(Transformer):
         )
 
     def indneutralize(self, items):
+        """
+        De-means a data matrix, data, DxN, D days in rows x N stocks in
+        columns by group means.
+
+        The group means come from Pipeline Classifiers: Sector() and 
+        SubIndustry(). These are integer values per stock; -1 for missing.
+
+        The Classifier produces a matrix window_lengthxN. We need the last
+        slice of this, assuming that the data is constant per day.
+
+        We set up a factor indicator matrix, OHE, like a one-hot-encoded
+        matrix.
+
+        # set up OHE matrix; add 1 so that missing now == 0
+        OHE = np.zeros(N, classifier.max()+2)
+        OHE[np.arange(N), classifier[-1] + 1) = 1
+
+        # The per day (rows) by per industry (columns) mean is
+        per_day_per_ind_mean = data.dot(OHE)/OHE.sum(axis=0)
+     
+        # The per day (rows) per *asset* (column) mean then is
+        per_day_per_asset_ind_mean = per_day_per_ind_mean.dot(OHE.T)
+
+        Finally, the de-meaned data matrix is simply calculated as
+
+        data = data - per_day_per_asset_ind_mean
+        """
         groupmap = {
-            'IndClass.subindustry': 'sector',
+            'IndClass.subindustry': 'subindustry',
             'IndClass.sector': 'sector',
-            'IndClass.industry': 'sector',
+            'IndClass.industry': 'subindustry',
         }
         
         v1 = self.stack.pop()
-        thisv = self.vcounter.next()
-        self.stack.append('v' + str(thisv))
         if len(items)<2:
             groupby = 'IndClass.subindustry'
         else:
             groupby = str(items[1])
+
+        group_label = groupmap[groupby]
         
+        # set up ICS matrix (like one-hot-encoded matrix); we add 1 to the
+        # ics scheme bc -1 is a missing, so increment all by 1
+        ohe = 'v' + str(self.vcounter.next())
         self.cmdlist.append(
-            'v' + str(thisv) + ' = ' + v1
+            ohe + ' = np.zeros(('+group_label+'.shape[1], '+group_label+'.max()+2))'
         )
+        self.cmdlist.append(
+            ohe + '[np.arange('+group_label+'.shape[1]), '+group_label+'[-1] + 1] = 1'
+        )
+
+        # get industry mean, per industry on columns, per day on rows
+        # and the dot(ohe.T) gives per stock industry mean
+        ind_mean = 'v' + str(self.vcounter.next())
+        self.cmdlist.append(
+            ind_mean + ' = (np.nan_to_num('+v1+'.dot('+ohe+')/'+ohe+'.sum(axis=0))).dot('+ohe+'.T)'
+        )
+        
+        thisv = self.vcounter.next()
+        self.stack.append('v' + str(thisv))
+        # subtract the per stock industry mean
+        self.cmdlist.append(
+            'v' + str(thisv) + ' = '+v1+' - '+ind_mean
+        )
+        
         
     def transform(self, tree):
         self._transform_tree(tree)
@@ -417,15 +465,15 @@ class ExpressionAlpha():
         self.imports = ["from __future__ import division\n"]
         self.imports.append("from zipline.pipeline.data import USEquityPricing as USEP\n")
         self.imports.append("from zipline.pipeline.factors import CustomFactor, Returns\n")
-        self.imports.append("from alphatools.ics import Sector\n")
+        self.imports.append("from alphatools.ics import Sector, SubIndustry\n")
         self.imports.append("import numpy as np\n")
         self.imports.append("import bottleneck as bn\n")
         self.imports.append("import pandas as pd\n")
         self.imports.append("from scipy.stats import rankdata\n\n")
         self.code = ["class ExprAlpha_1(CustomFactor):"]
-        self.code.append("    inputs = [Returns(window_length=2), USEP.open, USEP.high, USEP.low, USEP.close, USEP.volume]")
+        self.code.append("    inputs = [Returns(window_length=2), USEP.open, USEP.high, USEP.low, USEP.close, USEP.volume, Sector(), SubIndustry()]")
         self.code.append('    {0}'.format(raw_np_list[0]))
-        self.code.append("    def compute(self, today, assets, out, returns, opens, high, low, close, volume):")
+        self.code.append("    def compute(self, today, assets, out, returns, opens, high, low, close, volume, sector, subindustry):")
         lst = ['        {0}'.format(elem) for elem in raw_np_list]
 
         self.code = self.code + lst[1:]
