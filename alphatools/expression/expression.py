@@ -357,7 +357,8 @@ class MyTransformer(Transformer):
     def indneutralize(self, items):
         groupmap = {
             'IndClass.subindustry': 'sector',
-            'IndClass.sector': 'sector'
+            'IndClass.sector': 'sector',
+            'IndClass.industry': 'sector',
         }
         
         v1 = self.stack.pop()
