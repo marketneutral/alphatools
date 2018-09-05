@@ -26,6 +26,8 @@
       | returns
       | vwap
       | delay
+      | correlation
+      | covariance
       | delta
       | div
       | mult
@@ -41,6 +43,9 @@
 
 delay: "delay" "(" value "," SIGNED_NUMBER ")"
 delta: "delta" "(" value "," SIGNED_NUMBER ")"
+
+correlation: "correlation" "(" value "," value "," SIGNED_NUMBER ")"
+covariance: "covariance" "(" value "," value "," SIGNED_NUMBER ")"
 
 close: "close"
 opens: "opens"

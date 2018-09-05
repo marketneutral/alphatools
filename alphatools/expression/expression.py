@@ -309,6 +309,26 @@ class MyTransformer(Transformer):
         self.cmdlist.append(
             'v' + str(thisv) + ' = pd.DataFrame(data='+v1+').rolling(window='+items[1]+', center=False, min_periods=1).product().values'
         )
+
+    def correlation(self, items):
+        v2 = self.stack.pop()
+        v1 = self.stack.pop()
+        thisv = self.vcounter.next()
+        self.window = self.window + int(items[2])
+        self.stack.append('v' + str(thisv))
+        self.cmdlist.append(
+            'v' + str(thisv) + ' = pd.DataFrame('+v1+').rolling(window='+items[2]+', min_periods='+items[2]+').corr(other=pd.DataFrame('+v2+')).values'
+        )
+
+    def covariance(self, items):
+        v2 = self.stack.pop()
+        v1 = self.stack.pop()
+        thisv = self.vcounter.next()
+        self.window = self.window + int(items[2])
+        self.stack.append('v' + str(thisv))
+        self.cmdlist.append(
+            'v' + str(thisv) + ' = pd.DataFrame('+v1+').rolling(window='+items[2]+', min_periods='+items[2]+').cov(other=pd.DataFrame('+v2+')).values'
+        )
         
     def linear_decay(self, items):
         v1 = self.stack.pop()
