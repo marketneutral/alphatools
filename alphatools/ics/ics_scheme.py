@@ -13,6 +13,7 @@ class SICMajorIndustry(Classifier):
 
     dtype = int64_dtype
     window_length = 0
+    window_safe = True
     inputs = ()
     missing_value = -1
     
@@ -30,6 +31,7 @@ class Sector(Classifier):
 
     dtype = int64_dtype
     window_length = 0
+    window_safe = True
     inputs = ()
     missing_value = -1
     
@@ -56,13 +58,16 @@ class SubIndustry(Classifier):
 
     dtype = int64_dtype
     window_length = 0
+    window_safe = True
     inputs = ()
     missing_value = -1
     
     def __init__(self):
-        self.data = np.load('industries.npy')
+        self.data = np.load(
+            path.join(path.dirname(__file__), 'industries.npy')
+        )
         self.names = pd.read_csv(
-            'industry_names.csv',
+            path.join(path.dirname(__file__), 'industry_names.csv'),
             header=None,
             index_col=0,
             names=['Industry_Name']
