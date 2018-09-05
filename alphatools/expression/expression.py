@@ -338,20 +338,20 @@ class MyTransformer(Transformer):
             'v' + str(thisv) + ' = pd.DataFrame('+v1+').rolling(window='+items[2]+', min_periods='+items[2]+').cov(other=pd.DataFrame('+v2+')).values'
         )
         
-    def linear_decay(self, items):
+    def decay_linear(self, items):
         v1 = self.stack.pop()
         thisv = self.vcounter.next()
         days = int(items[1])
         self.window = self.window + days
         v2 = 'v'+str(thisv)
         self.cmdlist.append(
-            v2 + ' = (np.arange(' + items[1] + ')+1)/np.sum(np.arange(' + items[1]+ ')+1)'
+            v2 + ' = (np.arange(' + items[1] + ')+1.)/np.sum(np.arange(' + items[1]+ ')+1.)'
         )
         thisv = self.vcounter.next()
         self.stack.append('v' + str(thisv))
 
         self.cmdlist.append(
-            'v' + str(thisv) + ' = pd.DataFrame(data='+v1+').rolling(window='+items[1]+', center=False, min_periods=1).apply(lambda x: (x*'+v2+').sum()).values'
+            'v' + str(thisv) + ' = pd.DataFrame(data='+v1+').rolling(window='+items[1]+', center=False, min_periods='+items[1]+').apply(lambda x: (x*'+v2+').sum()).values'
         )
 
     def indneutralize(self, items):
@@ -363,9 +363,15 @@ class MyTransformer(Transformer):
         
         v1 = self.stack.pop()
         thisv = self.vcounter.next()
-        groupby = str(items[1])
+        self.stack.append('v' + str(thisv))
+        if len(items)<2:
+            groupby = 'IndClass.subindustry'
+        else:
+            groupby = str(items[1])
         
-        import pdb; pdb.set_trace()
+        self.cmdlist.append(
+            'v' + str(thisv) + ' = ' + v1
+        )
         
     def transform(self, tree):
         self._transform_tree(tree)
@@ -407,7 +413,8 @@ class ExpressionAlpha():
     def generate_pipeline_code(self):
         raw_np_list = self.raw_np_list
 # from __future__ import division
-        self.imports = ["from zipline.pipeline.data import USEquityPricing as USEP\n"]
+        self.imports = ["from __future__ import division\n"]
+        self.imports.append("from zipline.pipeline.data import USEquityPricing as USEP\n")
         self.imports.append("from zipline.pipeline.factors import CustomFactor, Returns\n")
         self.imports.append("from alphatools.ics import Sector\n")
         self.imports.append("import numpy as np\n")

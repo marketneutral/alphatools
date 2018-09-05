@@ -11,7 +11,7 @@
       | ternary
       | scale
       | signedpower
-      | linear_decay
+      | decay_linear
       | ts_max
       | ts_min
       | ts_argmax
@@ -67,7 +67,7 @@ ts_argmax: "ts_argmax" "(" value "," SIGNED_NUMBER ")"
 ts_argmin: "ts_argmin" "(" value "," SIGNED_NUMBER ")"
 ts_rank: "ts_rank" "(" value "," SIGNED_NUMBER ")"
 stddev: "stddev" "(" value "," SIGNED_NUMBER ")"
-indneutralize: "indneutralize" "(" value "," INDCLASS ")"
+indneutralize: "indneutralize" "(" value ["," INDCLASS] ")"
 
 div: value "/" value
 minus: value "-" value
@@ -83,8 +83,8 @@ equals: value "==" value
 logicalor: value "||" value
 ternary: value "?" value ":" value
 scale: "scale" "(" value ")"
-signedpower: "signedpower" "(" value ", " value ")"
-linear_decay: "linear_decay" "(" value ", " SIGNED_NUMBER ")"
+signedpower: "signedpower" "(" value "," value ")"
+decay_linear: "decay_linear" "(" value "," SIGNED_NUMBER ")"
 
 neg: "-" value
 rank: "rank" "(" value ")"
