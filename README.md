@@ -22,7 +22,7 @@ my_factor = (
 )
 
 expr_factor = (
-    ExpressionAlpha('rank(log(close/delay(close, 5)))').
+    ExpressionAlpha('rank(-log(close/delay(close, 5)))').
     pipeline_factor(mask=universe)
 )
 
