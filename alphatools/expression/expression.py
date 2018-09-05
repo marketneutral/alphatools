@@ -315,7 +315,7 @@ class MyTransformer(Transformer):
         self.window = self.window + int(items[1])
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
-            'v' + str(thisv) + ' = pd.DataFrame(data='+v1+').rolling(window='+items[1]+', center=False, min_periods=1).product().values'
+            'v' + str(thisv) + ' = pd.DataFrame(data='+v1+').rolling(window='+items[1]+', center=False, min_periods=1).apply(lambda x: np.prod(x)).values'
         )
 
     def correlation(self, items):
@@ -353,6 +353,18 @@ class MyTransformer(Transformer):
         self.cmdlist.append(
             'v' + str(thisv) + ' = pd.DataFrame(data='+v1+').rolling(window='+items[1]+', center=False, min_periods=1).apply(lambda x: (x*'+v2+').sum()).values'
         )
+
+    def indneutralize(self, items):
+        groupmap = {
+            'IndClass.subindustry': 'sector',
+            'IndClass.sector': 'sector'
+        }
+        
+        v1 = self.stack.pop()
+        thisv = self.vcounter.next()
+        groupby = str(items[1])
+        
+        import pdb; pdb.set_trace()
         
     def transform(self, tree):
         self._transform_tree(tree)
@@ -396,6 +408,7 @@ class ExpressionAlpha():
 # from __future__ import division
         self.imports = ["from zipline.pipeline.data import USEquityPricing as USEP\n"]
         self.imports.append("from zipline.pipeline.factors import CustomFactor, Returns\n")
+        self.imports.append("from alphatools.ics import Sector\n")
         self.imports.append("import numpy as np\n")
         self.imports.append("import bottleneck as bn\n")
         self.imports.append("import pandas as pd\n")

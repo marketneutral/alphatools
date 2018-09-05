@@ -29,6 +29,7 @@
       | delay
       | correlation
       | covariance
+      | indneutralize
       | delta
       | div
       | mult
@@ -41,6 +42,7 @@
       | number
       | SIGNED_NUMBER     -> number
       | ESCAPED_STRING
+
 
 delay: "delay" "(" value "," SIGNED_NUMBER ")"
 delta: "delta" "(" value "," SIGNED_NUMBER ")"
@@ -65,6 +67,7 @@ ts_argmax: "ts_argmax" "(" value "," SIGNED_NUMBER ")"
 ts_argmin: "ts_argmin" "(" value "," SIGNED_NUMBER ")"
 ts_rank: "ts_rank" "(" value "," SIGNED_NUMBER ")"
 stddev: "stddev" "(" value "," SIGNED_NUMBER ")"
+indneutralize: "indneutralize" "(" value "," INDCLASS ")"
 
 div: value "/" value
 minus: value "-" value
@@ -87,6 +90,8 @@ neg: "-" value
 rank: "rank" "(" value ")"
 sum: "sum" "(" value "," SIGNED_NUMBER ")"
 product: "product" "(" value "," SIGNED_NUMBER ")"
+
+INDCLASS: ("IndClass.subindustry" |  "IndClass.sector")
 
 %import common.SIGNED_NUMBER
 %import common.ESCAPED_STRING
