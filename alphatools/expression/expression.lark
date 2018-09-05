@@ -24,6 +24,7 @@
       | low
       | volume
       | returns
+      | vwap
       | delay
       | delta
       | div
@@ -33,6 +34,7 @@
       | neg
       | rank
       | sum
+      | product
       | number
       | SIGNED_NUMBER     -> number
       | ESCAPED_STRING
@@ -46,11 +48,12 @@ high: "high"
 low: "low"
 volume: "volume"
 returns: "returns"
+vwap: "vwap"
 
 number: SIGNED_NUMBER
 
-ts_max: "ts_max" "(" value "," SIGNED_NUMBER ")"
-ts_min: "ts_min" "(" value "," SIGNED_NUMBER ")"
+ts_max: ("ts_max"|"max") "(" value "," SIGNED_NUMBER ")"
+ts_min: ("ts_min"|"min") "(" value "," SIGNED_NUMBER ")"
 ts_argmax: "ts_argmax" "(" value "," SIGNED_NUMBER ")"
 ts_argmin: "ts_argmin" "(" value "," SIGNED_NUMBER ")"
 ts_rank: "ts_rank" "(" value "," SIGNED_NUMBER ")"
@@ -76,6 +79,7 @@ linear_decay: "linear_decay" "(" value ", " SIGNED_NUMBER ")"
 neg: "-" value
 rank: "rank" "(" value ")"
 sum: "sum" "(" value "," SIGNED_NUMBER ")"
+product: "product" "(" value "," SIGNED_NUMBER ")"
 
 %import common.SIGNED_NUMBER
 %import common.ESCAPED_STRING

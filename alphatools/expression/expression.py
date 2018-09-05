@@ -53,7 +53,13 @@ class MyTransformer(Transformer):
         
     def volume(self, items):
         self.stack.append('volume')
-        
+
+    def vwap(self, items):
+        thisv = self.vcounter.next()
+        self.stack.append('v' + str(thisv))
+        self.cmdlist.append(
+            'v' + str(thisv) + ' = (close + (opens + high + low)/3)/2'
+        )
 #    def opens(self, items):
 #        thisv = self.vcounter.next()
 #        self.stack.append('v' + str(thisv))
@@ -137,6 +143,7 @@ class MyTransformer(Transformer):
         )
         
     def scale(self, items):
+        # TODO: 101 paper says scaled sum(abs)==a; silent on mean
         term1 = self.stack.pop()
         thisv = self.vcounter.next()
         self.stack.append('v' + str(thisv))
@@ -294,6 +301,15 @@ class MyTransformer(Transformer):
             'v' + str(thisv) + ' = pd.DataFrame(data='+v1+').rolling(window='+items[1]+', center=False, min_periods=1).sum().values'
         )
 
+    def product(self, items):
+        v1 = self.stack.pop()
+        thisv = self.vcounter.next()
+        self.window = self.window + int(items[1])
+        self.stack.append('v' + str(thisv))
+        self.cmdlist.append(
+            'v' + str(thisv) + ' = pd.DataFrame(data='+v1+').rolling(window='+items[1]+', center=False, min_periods=1).product().values'
+        )
+        
     def linear_decay(self, items):
         v1 = self.stack.pop()
         thisv = self.vcounter.next()

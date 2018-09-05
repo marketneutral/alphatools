@@ -76,18 +76,28 @@ This functionality should allow you to use new data in research very quickly wit
 
 ## Expression Alphas
 
-The ability to parse "expression" alphas is meant to help speed the research process and/or allow non-Python literate financial professionals to test alpha ideas. See  ["101 Formulaic Alphas"](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2701346) for details on this DSL. The (EBNF) grammar is fully specified ["here"](https://github.com/marketneutral/alphatools/blob/master/alphatools/expression/expression.lark). We use the `Lark` Python parsing library (great name, no relation). Currently, the data for `open`, `high`, `low`, `close`, `volume` is accessible; the following operators are implemented
+The ability to parse "expression" alphas is meant to help speed the research process and/or allow financial professionals with minimal Python experience to test alpha ideas. See  ["101 Formulaic Alphas"](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2701346) for details on this DSL. The (EBNF) grammar is fully specified ["here"](https://github.com/marketneutral/alphatools/blob/master/alphatools/expression/expression.lark). We use the `Lark` Python parsing library (great name, no relation). Currently, the data for `open`, `high`, `low`, `close`, `volume` are accessible; the following calculations and operators are implemented
 
+* `vwap`: the daily vwap (this is approximated with `(close + (opens + high + low)/3)/2`)
 * `returns`: daily close-to-close returns
-* `delay(d, days)`: *d* lagged by *days*.
-* `delta(d, days)`: diff on *d* per *days* timestep.
-* `ts_max(d, days)`: the per asset time series max on *d* over the trailing *days* (also `ts_min(...)`).
-* `rank(d)`: ranks, per day, across all assets (i.e., the cross-sectional rank).
-* `sum(d, days)`: the sum per asset on *d* over the trailing *days*.
-* `+`,`-`, `*`, `/`: as expected
-* `-d`: unary minus (i.e., negation).
+* `+`,`-`, `*`, `/`: as expected, though only taking binary \<expr\> on either side of the symbol
+* `-d`: unary minus (i.e., negation)
+* `abs(x)`, `log(x)`, `sign(x)`: elementwise standard math operations
+* `>`, `<`, `==`, `||`: elementwise comparator operations returning 1 or 0
+* `x ? y : z`: C-style ternary operator; `if x: y; else z`
+* `rank(x)`: ranks, per day, across all assets (i.e., the cross-sectional rank); ranks are descending such that the rank of the maximum raw value in the vector is N, where N is the number of assets
+* `delay(x, days)`: *x* lagged by *days*
+* `delta(x, days)`: diff on *x* per *days* timestep
+* `signedpower(x, a)`: elementwise x^a
+* `decay_linear(x, days)`: weighted sum of *x* over the past *days* with linearly decaying weights (weights sum to 1; max of the weights is on the most recent day)
+* `ts_max(x, days)`: the per asset time series max on *x* over the trailing *days* (also `ts_min(...)`); `max(...)` and `min(...)` are aliases
+* `ts_argmax(x. days)`: on which day `ts_max(x, days)` occurred (also `ts_argmin(...)`)
+* `ts_rank(x, days)`: the time series rank per asset on *x* over the the trailing *days*
+* `sum(x, days)`: the sum per asset on *x* over the trailing *days*
+* `product(x, days)`: the product per asset on *x* over the trailing *days*
+* `stddev(x, days)`: the standard deviation per asset on *x* over the trailing *days*
 
-The expression alpha parser produces `zipline` compatible `Pipeline` factor code. Note however, this implementation makes use of the `bottleneck` package which provides many `numpy`-style rolling aggregations, implemented in highly optimized compiled C code. The `bottleneck` package is distributed in compiled form in the Anaconda Python distribution (see Installation below).
+The expression alpha parser produces `zipline` compatible `Pipeline` factor code. This implementation makes use of the `bottleneck` package which provides many `numpy`-style rolling aggregations, implemented in highly optimized compiled C code. The `bottleneck` package is distributed in compiled form in the Anaconda Python distribution (see Installation below).
 
 ## Installation
 
