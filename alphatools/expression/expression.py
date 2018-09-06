@@ -28,7 +28,7 @@ class MyTransformer(Transformer):
         thisv = self.vcounter.next()
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
-            'v' + str(thisv) + ' = np.apply_along_axis(rankdata, 1, ' + term1 +')'
+            'v' + str(thisv) + ' = np.apply_along_axis(rankdata, 1, ' + term1 +', method="ordinal")'
         )
     
 #    def close(self, items):
