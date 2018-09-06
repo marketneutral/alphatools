@@ -128,7 +128,7 @@ e = (
 
 The parse tree, as created by `from lark.tree import pydot__tree_to_png; pydot__tree_to_png(e.tree, "alpha9.png")` is
 
-![alpha9](https://user-images.githubusercontent.com/16124573/45169838-6e7e0f00-b1cc-11e8-9967-0c9d8bf70172.png)
+![alpha9](https://user-images.githubusercontent.com/16124573/45169838-6e7e0f00-b1cc-11e8-9967-0c9d8bf70172.png?s=20)
 
 and the resuling `Pipeline` code, as produced by `print(e.pipeline_code)` is
 
