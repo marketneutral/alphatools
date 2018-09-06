@@ -1,7 +1,6 @@
 // Lark grammar for "expression"-based alphas
 
-?value: "(" value ")"
-      | abs
+?value: abs
       | log
       | sign
       | greaterthan
@@ -35,14 +34,14 @@
       | mult
       | minus
       | plus
-      | neg
       | rank
       | sum
       | product
       | number
       | SIGNED_NUMBER     -> number
       | ESCAPED_STRING
-
+      | "(" value ")"
+      | neg
 
 delay: "delay" "(" value "," SIGNED_NUMBER ")"
 delta: "delta" "(" value "," SIGNED_NUMBER ")"

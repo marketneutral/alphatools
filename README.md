@@ -126,12 +126,11 @@ e = (
 ```
 
 
-The parse tree can be visualized with `from lark.tree import pydot__tree_to_png; pydot__tree_to_png(e.tree, "alpha9.png")`:
+The abstract snytax tree ("AST") can be visualized with `from lark.tree import pydot__tree_to_png; pydot__tree_to_png(e.tree, "alpha9.png")`:
 
 <img src="https://user-images.githubusercontent.com/16124573/45169838-6e7e0f00-b1cc-11e8-9967-0c9d8bf70172.png" width="750">
 
 This is quite helpful, in my opinion, to understand a third-party alpha like this. So what's happening? Looking top to bottom at each level, left to right: if zero is less than the minimum of the daily price change over the trailing five days (i.e., if the stock has gone **up** *every day* for the last five days), then the factor value is simpy the price change over the *most recent* day, which is a positive number by definition, and thus bets that positive momentum will continue. That branch should be pretty rare (meaning it would be rare for a stock to go up every day for five days in a row). Otherwise, we check if the max price change in the last 5 days is less than zero (i.e., the stock has gone **down** *every day* for the last 5 days), then the factor value again is just the price change over the *most recent day*, which is a negative number by definition. Thus if the stock has gone straight down for 5 days, the factor bets that it will continue. This should also be rare. Lastly, if neither of these two states exist, the factor value is just -1 times the last day's price change; i.e., a bet on mean reversion. Hence, by inspecting the parse tree like this, we can understand that this alpha is a momentum/mean-reversion switching factor; it assumes momentum will persist if the prior five days have moved in the same direction, otherwise it assumes mean-reversion will occur. Note, I randomly picked this alpha becuase the parse tree looked pretty, but it turns out the interpretation is very nice.
-
 
 You can see the resuling `Pipeline` code (though this is not necessary to use the alpha in `run_pipeline`) with `print(e.pipeline_code)`:
 
@@ -157,6 +156,8 @@ class ExprAlpha_1(CustomFactor):
         v12 = np.where(v2, v3, v11)
         out[:] = v12[-1]
 ```
+
+There is no compile-time optimization of the AST at all here! What is happening is that the compiler walks down the AST and converts each node into a Python equivalent (`numpy`, `bottleneck`, and/or `pandas`) expression, keeping track of the call stack so that future references to prior calculations are correct. The resulting Python code is in the style of "three-address code". There is of course plenty of optimization which can be done.
 
 Note that there is no reference implementation of the expression-style alpha syntax to test against and that there are many specific details lacking the paper. As such, this implementation makes some assumptions where necessary (as a simple example, the paper does not specify if `rank` is ascending or descending, however, it obviously should be ascending as a larger raw value should produce a larger numberical rank to keep the alpha vector *directly* proportional). This is experimental and I have created only a handful of tests.
 
