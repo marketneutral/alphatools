@@ -28,9 +28,8 @@ my_factor = (
 
 expr_factor = (
     ExpressionAlpha(
-		'rank(indneutralize(-log(close/delay(close, 4))),IndClass.sector)'
-	).
-    pipeline_factor(mask=universe)
+        'rank(indneutralize(-log(close/delay(close, 4))),IndClass.sector)'
+    ).pipeline_factor(mask=universe)
 )
 
 p = Pipeline(screen=universe)
