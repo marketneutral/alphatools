@@ -126,12 +126,14 @@ e = (
 ```
 
 
-The parse tree, as created by `from lark.tree import pydot__tree_to_png; pydot__tree_to_png(e.tree, "alpha9.png")` is
+The parse tree can be visualized with `from lark.tree import pydot__tree_to_png; pydot__tree_to_png(e.tree, "alpha9.png")`:
 
 <img src="https://user-images.githubusercontent.com/16124573/45169838-6e7e0f00-b1cc-11e8-9967-0c9d8bf70172.png" width="750">
 
+This is quite helpful, in my opinion, to understand a third-party alpha like this. So what's happening? Looking top to bottom at each level, left to right: if zero is less than the minimum of the daily price change over the trailing five days (i.e., if the stock has gone **up** *every day* for the last five days), then the factor value is simpy the price change over the *most recent* day, which is a positive number by definition, and thus bets that positive momentum will continue. That branch should be pretty rare (meaning it would be rare for a stock to go up every day for five days in a row). Otherwise, we check if the max price change in the last 5 days is less than zero (i.e., the stock has gone **down** *every day* for the last 5 days), then the factor value again is just the price change over the *most recent day*, which is a negative number by definition. Thus if the stock has gone straight down for 5 days, the factor bets that it will continue. This should also be rare. Lastly, if neither of these two states exist, the factor value is just -1 times the last day's price change; i.e., a bet on mean reversion. Hence, by inspecting the parse tree like this, we can understand that this alpha is a momentum/mean-reversion switching factor; it assumes momentum will persist if the prior five days have moved in the same direction, otherwise it assumes mean-reversion will occur. Note, I randomly picked this alpha becuase the parse tree looked pretty, but it turns out the interpretation is very nice.
 
-and the resuling `Pipeline` code, as produced by `print(e.pipeline_code)` is
+
+You can see the resuling `Pipeline` code (though this is not necessary to use the alpha in `run_pipeline`) with `print(e.pipeline_code)`:
 
 ```python
 class ExprAlpha_1(CustomFactor):
