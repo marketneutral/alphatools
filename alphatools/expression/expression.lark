@@ -91,7 +91,7 @@ rank: "rank" "(" value ")"
 sum: "sum" "(" value "," SIGNED_NUMBER ")"
 product: "product" "(" value "," SIGNED_NUMBER ")"
 
-INDCLASS: ("IndClass.subindustry" |  "IndClass.sector")
+INDCLASS: ("IndClass.industry" | "IndClass.subindustry" | "IndClass.sector")
 
 %import common.SIGNED_NUMBER
 %import common.ESCAPED_STRING

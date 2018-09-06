@@ -19,6 +19,7 @@ expressions = {
     '5': 'delta(close,5)/delay(close,5)',
     '6': 'rank(close)',
     '7': 'indneutralize(close, IndClass.sector)',
+    '8': 'indneutralize(close, IndClass.industry)',
 }
 
 class Control_1(CustomFactor):
@@ -44,6 +45,7 @@ control_4 = Returns(window_length=2)
 control_5 = Returns(window_length=6)
 control_6 = USEP.close.latest.rank(mask=universe)
 control_7 = USEP.close.latest.demean(groupby=Sector(), mask=universe)
+control_8 = USEP.close.latest.demean(groupby=SubIndustry(), mask=universe)
 
 control = {
     '0': control_0,
@@ -54,6 +56,7 @@ control = {
     '5': control_5,
     '6': control_6,
     '7': control_7,
+    '8': control_8,
 }
 
 
@@ -71,8 +74,8 @@ def test_factor(expression, control, start_date='2017-01-04', end_date='2017-01-
         print df
 
 
-start_fac = 7
-end_fac = 7
+start_fac = 0
+end_fac = 8
 
 for i in range(start_fac, end_fac+1):
-    test_factor(ExpressionAlpha(expressions[str(i)]), control[str(i)], show_df=True)
+    test_factor(ExpressionAlpha(expressions[str(i)]), control[str(i)], show_df=False)

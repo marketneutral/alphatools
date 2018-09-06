@@ -1,8 +1,12 @@
 ![](https://user-images.githubusercontent.com/16124573/44810782-d0bd8b00-aba0-11e8-81f3-e4fe042c481d.png)
 
-This package provides convenience functions to help make the alpha factor research process more accessible. The convenience functions sit on top of [zipline]() and, specifically, the `Pipeline` cross-sectional classes and functions in that package. `alphatools` allows you to `run_pipeline` in a Jupyter notebook local to you and supports the easy creation of `Pipeline` factors **at runtime** on **arbitrary data sources**. In other words, just expose the endpoint for data sitting somewhere, specify the schema, and...it's available for use in `Pipeline`! Additionally, you can **parse "expression" style alphas** per the paper ["101 Formulaic Alphas"](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2701346) into `Pipeline` factors. This feature is experimental and the complete grammar has not yet been implemented.
+This package provides functions to make the equity alpha factor research process more accessible and productive. Convenience functions sit on top of [zipline](https://github.com/quantopian/zipline) and, specifically, the [`Pipeline`](https://www.quantopian.com/help#pipeline-api) cross-sectional classes and functions in that package. `alphatools` allows you to 
 
-For example, with `alphatools`, in a Jupyter notebook, you can
+- `run_pipeline` in a Jupyter notebook (or from any arbitrary Python code) **in your local environment**,
+- create `Pipeline` factors **at runtime** on **arbitrary data sources** (just expose the endpoint for data sitting somewhere, specify the schema, and...it's available for use in `Pipeline`!), and 
+- parse and compile **"expression" style alphas** as described the paper ["101 Formulaic Alphas"](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2701346) into `Pipeline` factors.
+
+For example, with `alphatools`, you can, say, within a Jupyter notebook,
 
 ```python
 from alphatools.research import run_pipeline
@@ -22,14 +26,16 @@ my_factor = (
 )
 
 expr_factor = (
-    ExpressionAlpha('rank(-log(close/delay(close, 5)))').
+    ExpressionAlpha(
+		'rank(indneutralize(-log(close/delay(close, 4))),IndClass.sector)'
+	).
     pipeline_factor(mask=universe)
 )
 
 p = Pipeline(screen=universe)
 
 p.add(my_factor, '5d_MR_Sector_Neutral_Rank')
-p.add(expr_factor, 'Expression Alpha')
+p.add(expr_factor, '5d_MR_Expression Alpha')
 
 p.add(Factory['my_special_data'].value.latest.zscore(), 'Special_Factor')
 
@@ -58,7 +64,7 @@ To "Bring Your Own Data", you simply point the Factory object to an endpoint and
 
 In the case of the example PostgreSQL `url`, note that the text `$USER` will be substituted with the text in the environment variable `USER` and the text `$PASS` will be substituted with the text in the environment variable `PASS`. Basically, any text token in the `url` which is preceeded by `$` will be substituted by the text in the environment variable of that name. Hence, you do not need to expose actual credentials in this file.
 
-The `schema` is specified in the `dshape` DSL from the package `datashape` with docs [here](). The magic happens via the `blaze/datashape/odo` stack. You can specify the `url` to a huge variety of source formats including `json`, `csv`, PostgreSQL tables, MongoDB collections, `bcolz`, Microsoft Excel(!?), `.gz` compressed files, collections of files (e.g., `myfiles_*.csv`), and remote locations like Amazon S3 and a Hadoop Distributed File System. To me, the [`odo`](https://en.wikipedia.org/wiki/Odo_(Star_Trek)) [documentation on URI strings](http://odo.pydata.org/en/latest/uri.html) is the clearest explanation on this.
+The `schema` is specified as a `dshape` from the package `datashape` (docs [here]()). The magic happens via the `blaze/datashape/odo` stack. You can specify the `url` to a huge variety of source formats including `json`, `csv`, PostgreSQL tables, MongoDB collections, `bcolz`, Microsoft Excel(!?), `.gz` compressed files, collections of files (e.g., `myfiles_*.csv`), and remote locations like Amazon S3 and a Hadoop Distributed File System. To me, the [`odo`](https://en.wikipedia.org/wiki/Odo_(Star_Trek)) [documentation on URI strings](http://odo.pydata.org/en/latest/uri.html) is the clearest explanation on this.
 
 Note that this data must be mapped to the `sid` as mapped by `zipline ingest`. Also, the data rowwise dates must be in a column titled `asof_date`. You can then access this data like
 
@@ -76,32 +82,81 @@ This functionality should allow you to use new data in research very quickly wit
 
 ## Expression Alphas
 
-The ability to parse "expression" alphas is meant to help speed the research process and/or allow financial professionals with minimal Python experience to test alpha ideas. See  ["101 Formulaic Alphas"](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2701346) for details on this DSL. The (EBNF) grammar is fully specified ["here"](https://github.com/marketneutral/alphatools/blob/master/alphatools/expression/expression.lark). We use the `Lark` Python [parsing library](https://github.com/lark-parser/lark) (great name, no relation). Currently, the data for `open`, `high`, `low`, `close`, `volume` are accessible; the following calculations and operators are implemented
+The ability to parse "expression" alphas is meant to help speed the research process and/or allow financial professionals with minimal Python experience to test alpha ideas. See ["101 Formulaic Alphas"](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2701346) for details on this DSL. The (EBNF) grammar is fully specified ["here"](https://github.com/marketneutral/alphatools/blob/master/alphatools/expression/expression.lark). We use the `Lark` Python [parsing library](https://github.com/lark-parser/lark) (great name, no relation). Currently, the data for `open`, `high`, `low`, `close`, `volume` are accessible; the following calculations and operators are implemented
 
-* `vwap`: the daily vwap (as a default, this is approximated with `(close + (opens + high + low)/3)/2`)
-* `returns`: daily close-to-close returns
-* `+`,`-`, `*`, `/`: as expected, though only for two terms (i.e., only \<expr\> \<op\> \<expr\>)
-* `-x`: unary minus on x
-(i.e., negation)
-* `abs(x)`, `log(x)`, `sign(x)`: elementwise standard math operations
-* `>`, `<`, `==`, `||`: elementwise comparator operations returning 1 or 0
-* `x ? y : z`: C-style ternary operator; `if x: y; else z`
-* `rank(x)`: ranks, per day, across all assets (i.e., the cross-sectional rank); ranks are descending such that the rank of the maximum raw value in the vector is N, where N is the number of assets
-* `delay(x, days)`: *x* lagged by *days*
-* `correlation(x, y, days)`: the Pearson correlation of the values for assets in *x* to the corresponding values for the same assets in *y* over *days*; note this is very slow in the current implementation
-* `covariance(x, y, days)`: the covariance of the values for assets in *x* to the corresponding values for the same assets in *y* over *days*; note this is very slow as well currently
-* `delta(x, days)`: diff on *x* per *days* timestep
-* `signedpower(x, a)`: elementwise x^a
-* `decay_linear(x, days)`: weighted sum of *x* over the past *days* with linearly decaying weights (weights sum to 1; max of the weights is on the most recent day)
-* `ts_max(x, days)`: the per asset time series max on *x* over the trailing *days* (also `ts_min(...)`); `max(...)` and `min(...)` are aliases
-* `ts_argmax(x, days)`: on which day `ts_max(x, days)` occurred (also `ts_argmin(...)`)
-* `ts_rank(x, days)`: the time series rank per asset on *x* over the the trailing *days*
-* `sum(x, days)`: the sum per asset on *x* over the trailing *days*
-* `product(x, days)`: the product per asset on *x* over the trailing *days*
-* `stddev(x, days)`: the standard deviation per asset on *x* over the trailing *days*
-* `adv{days}`: the average daily **dollar** volume per asset over the trailing *days* (e.g., `adv20` gives the 20-day trailing average daily dollar volume)
+* `vwap`: the daily vwap (as a default, this is approximated with `(close + (opens + high + low)/3)/2`).
+* `returns`: daily close-to-close returns.
+* `+`,`-`, `*`, `/`: as expected, though only for two terms (i.e., only \<expr\> \<op\> \<expr\>).
+* `-x`: unary minus on x (i.e., negation).
+* `abs(x)`, `log(x)`, `sign(x)`: elementwise standard math operations.
+* `>`, `<`, `==`, `||`: elementwise comparator operations returning 1 or 0.
+* `x ? y : z`: C-style ternary operator; `if x: y; else z`.
+* `rank(x)`: ranks, per day, across all assets (i.e., the cross-sectional rank); ranks are descending such that the rank of the maximum raw value in the vector is N, where N is the number of assets; ordinal method to match `Pipeline` method `.rank()`.
+* `delay(x, days)`: *x* lagged by *days*. Note that the *days* parameter in `delay` and `delta` differs from the `window_length` parameter you may be familiar with in `Pipeline`. The `window_length` refers to a the number of data points in the (row axis of the) data matrix, *not* the number of days lag. For example, in `Pipeline` if you want daily returns, you specify a `window_length` of `2` since you need 2 data points--today and the day prior--to get a daily return. In an expression alpha, the *days* is the lag *from today*. Concretely, a simple example to show is: the `Pipeline` factor `Returns(window_length=2)` is precisely equal to the expression alpha `delta(close,1)/delay(close,1)`.
+* `correlation(x, y, days)`: the Pearson correlation of the values for assets in *x* to the corresponding values for the same assets in *y* over *days*; note this is very slow in the current implementation.
+* `covariance(x, y, days)`: the covariance of the values for assets in *x* to the corresponding values for the same assets in *y* over *days*; note this is very slow as well currently.
+* `delta(x, days)`: diff on *x* per *days* timestep.
+* `signedpower(x, a)`: elementwise x^a (i.e., `x**a`).
+* `decay_linear(x, days)`: weighted sum of *x* over the past *days* with linearly decaying weights (weights sum to 1; max of the weights is on the most recent day).
+* `indneutralize(x, g)`: `x`, cross-sectionally "neutralized" (i.e., demeaned) against the group membership classifier `g`. `g` must be in the set {`IndClass.sector`, `IndClass.industry`, `IndClass.subindustry`}. The set `g` maps to the `Pipeline` classifiers `Sector()` and `SubIndustry()` in `alphatools.ics`. Concretely, the `Pipeline` factor `Returns().demean(groupby=Sector())` is equivalent (save a corner case on NaN treatment) to the expression `indneutralize(returns, IndClass.sector)`. If you do not specifically pass a token for `g`, the default of `IndClass.industry` is applied.
+* `ts_max(x, days)`: the per asset time series max on *x* over the trailing *days* (also `ts_min(...)`); `max(...)` and `min(...)` are aliases.
+* `ts_argmax(x, days)`: on which day `ts_max(x, days)` occurred (also `ts_argmin(...)`).
+* `ts_rank(x, days)`: the time series rank per asset on *x* over the the trailing *days*.
+* `sum(x, days)`: the sum per asset on *x* over the trailing *days*.
+* `product(x, days)`: the product per asset on *x* over the trailing *days*.
+* `stddev(x, days)`: the standard deviation per asset on *x* over the trailing *days*.
+* `adv{days}`: the average daily **dollar** volume per asset over the trailing *days* (e.g., `adv20` gives the 20-day trailing average daily dollar volume).
 
-The expression alpha parser produces `zipline` compatible `Pipeline` factor code. This implementation makes use of the `bottleneck` package which provides many `numpy`-style rolling aggregations, implemented in highly optimized compiled C code. The `bottleneck` package is distributed in compiled form in the Anaconda Python distribution (see Installation below).
+The expression alpha parser produces `zipline` compatible `Pipeline` factor code. This implementation makes use of the `bottleneck` package which provides many `numpy`-style rolling aggregations, implemented in highly optimized compiled C code. The `bottleneck` package is distributed in binary form in the Anaconda Python distribution (see Installation below).
+
+For example, the expression alpha "#9" from the paper
+
+```
+((0 < ts_min(delta(close, 1), 5)) ? delta(close, 1) : ((ts_max(delta(close, 1), 5) < 0) ? delta(close, 1) : (-1 * delta(close, 1))))
+```
+
+is compiled into a usable `Pipeline` factor, `e`, as
+
+```python
+e = (
+	ExpressionAlpha('((0 < ts_min(delta(close, 1), 5)) ? delta(close, 1) : ((ts_max(delta(close, 1), 5) < 0) ? delta(close, 1) : (-1 * delta(close, 1))))).
+	make_pipeline_factor().
+	pipeline_factor(mask=universe)
+)
+```
+
+
+The parse tree, as created by `from lark.tree import pydot__tree_to_png; pydot__tree_to_png(e.tree, "alpha9.png")` is
+
+![alpha9](https://user-images.githubusercontent.com/16124573/45169838-6e7e0f00-b1cc-11e8-9967-0c9d8bf70172.png)
+
+and the resuling `Pipeline` code is
+
+```python
+class ExprAlpha_1(CustomFactor):
+    inputs = [Returns(window_length=2), USEP.open, USEP.high,
+              USEP.low, USEP.close, USEP.volume, Sector(), SubIndustry()]
+    window_length = 17
+
+    def compute(self, today, assets, out, returns, opens, high, low, close, volume, sector, subindustry):
+        v0 = close - np.roll(close, 1, axis=0)
+        v1 = bn.move_min(v0, window=5, min_count=1,  axis=0)
+        v2 = np.less(0, v1)
+        v3 = close - np.roll(close, 1, axis=0)
+        v4 = close - np.roll(close, 1, axis=0)
+        v5 = bn.move_max(v4, window=5, min_count=1,  axis=0)
+        v6 = np.less(v5, 0)
+        v7 = close - np.roll(close, 1, axis=0)
+        v8 = close - np.roll(close, 1, axis=0)
+        v9 = 1*v8
+        v10 = -v9
+        v11 = np.where(v6, v7, v10)
+        v12 = np.where(v2, v3, v11)
+        out[:] = v12[-1]
+```
+
+Note that there is no reference implementation of the expression-style alpha syntax to test against and that there are many specific details lacking the paper. As such, this implementation makes some assumptions where necessary (as a simple example, the paper does not specify if `rank` is ascending or descending, however, it obviously should be ascending as a larger raw value should produce a larger numberical rank to keep the alpha vector *directly* proportional). This is experimental and I have created only a handful of tests.
+
 
 ## Installation
 
@@ -165,7 +220,7 @@ Though this is in the `LICENSE` file, it bears noting that this software is prov
 
 Additionally, nothing in this package constitutes investment advice. This package is a personal project and nothing in its functionality or examples is reflective of any past or current employer.
 
-Lastly, there are no automated tests (or any tests for that matter), no docstrings, or any other features associated with what you might consider a well supported open source package. 
+Lastly, there are no automated tests (or any significnat tests for that matter), no automated nightly build, no docstrings, or any other features associated with what you might consider a well supported open source package. 
 
 ## Contributing
 
