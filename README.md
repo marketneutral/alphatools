@@ -1,5 +1,4 @@
-<img src="https://user-images.githubusercontent.com/16124573/45172617-dab04100-b1d3-11e8-9b09-a8da8d37a252.png" height="300">
-
+<img src="https://user-images.githubusercontent.com/16124573/45173356-f3b9f180-b1d5-11e8-97ba-5e92154c630a.png" height="400">
 
 
 This package provides functions to make the equity alpha factor research process more accessible and productive. Convenience functions sit on top of [zipline](https://github.com/quantopian/zipline) and, specifically, the [`Pipeline`](https://www.quantopian.com/help#pipeline-api) cross-sectional classes and functions in that package. `alphatools` allows you to 
