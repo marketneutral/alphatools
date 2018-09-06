@@ -1,4 +1,4 @@
-![](https://user-images.githubusercontent.com/16124573/44810782-d0bd8b00-aba0-11e8-81f3-e4fe042c481d.png)
+<img src="https://user-images.githubusercontent.com/16124573/45171371-35479e00-b1d0-11e8-98bd-b716941df5fb.png" height="300">
 
 This package provides functions to make the equity alpha factor research process more accessible and productive. Convenience functions sit on top of [zipline](https://github.com/quantopian/zipline) and, specifically, the [`Pipeline`](https://www.quantopian.com/help#pipeline-api) cross-sectional classes and functions in that package. `alphatools` allows you to 
 
@@ -128,7 +128,8 @@ e = (
 
 The parse tree, as created by `from lark.tree import pydot__tree_to_png; pydot__tree_to_png(e.tree, "alpha9.png")` is
 
-![alpha9](https://user-images.githubusercontent.com/16124573/45169838-6e7e0f00-b1cc-11e8-9967-0c9d8bf70172.png?s=20)
+<img src="https://user-images.githubusercontent.com/16124573/45169838-6e7e0f00-b1cc-11e8-9967-0c9d8bf70172.png" width="750">
+
 
 and the resuling `Pipeline` code, as produced by `print(e.pipeline_code)` is
 
