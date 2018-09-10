@@ -16,6 +16,8 @@
       | ts_argmax
       | ts_argmin
       | ts_rank
+      | max
+      | min
       | stddev
       | close
       | opens
@@ -34,14 +36,17 @@
       | mult
       | minus
       | plus
+      | powerof
       | rank
       | sum
       | product
-      | number
-      | SIGNED_NUMBER     -> number
       | ESCAPED_STRING
       | "(" value ")"
       | neg
+      | number
+      | cap
+      | SIGNED_NUMBER     -> number
+
 
 delay: "delay" "(" value "," SIGNED_NUMBER ")"
 delta: "delta" "(" value "," SIGNED_NUMBER ")"
@@ -57,21 +62,27 @@ volume: "volume"
 returns: "returns"
 vwap: "vwap"
 adv: "adv" SIGNED_NUMBER
+cap: "cap"
 
 number: SIGNED_NUMBER
 
-ts_max: ("ts_max"|"max") "(" value "," SIGNED_NUMBER ")"
-ts_min: ("ts_min"|"min") "(" value "," SIGNED_NUMBER ")"
+ts_max: "ts_max" "(" value "," SIGNED_NUMBER ")"
+ts_min: "ts_min" "(" value "," SIGNED_NUMBER ")"
 ts_argmax: "ts_argmax" "(" value "," SIGNED_NUMBER ")"
 ts_argmin: "ts_argmin" "(" value "," SIGNED_NUMBER ")"
 ts_rank: "ts_rank" "(" value "," SIGNED_NUMBER ")"
 stddev: "stddev" "(" value "," SIGNED_NUMBER ")"
 indneutralize: "indneutralize" "(" value ["," INDCLASS] ")"
 
+// not what paper says; this is element by element min
+max: "max" "(" value "," value ")"
+min: "min" "(" value "," value ")"
+
 div: value "/" value
 minus: value "-" value
 plus: value "+" value
 mult: value "*" value
+powerof: value "^" value
 
 abs: "abs" "(" value ")"
 log: "log" "(" value ")"

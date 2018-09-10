@@ -110,3 +110,4 @@ venv.bak/
 *~
 *.db
 src
+alpha*.png

@@ -13,7 +13,7 @@ class MyTransformer(Transformer):
         self.window = 2
         self.vcounter = itertools.count()
         self.stack = []
-
+        
 
     def neg(self, items):
         term1 = self.stack.pop()
@@ -37,6 +37,14 @@ class MyTransformer(Transformer):
 #        self.cmdlist.append(
 #            'v' + str(thisv) + ' = close'
 #        )
+
+    def cap(self, items):
+        thisv = self.vcounter.next()
+        self.stack.append('v' + str(thisv))
+        self.cmdlist.append(
+            'v' + str(thisv) + ' = 1.0'
+        )
+
     def number(self, items):
         #import pdb; pdb.set_trace()
         self.stack.append(str(items[0].value))
@@ -88,7 +96,28 @@ class MyTransformer(Transformer):
             'v' + str(thisv) + ' = ' + term1 + ' / ' + term2
         )
 
-    def signedpower(self, items):
+    def min(self, items):
+        # TODO: check that this is parallel min 
+        term2 = self.stack.pop()
+        term1 = self.stack.pop()
+        thisv = self.vcounter.next()
+        self.stack.append('v' + str(thisv))
+        self.cmdlist.append(
+            'v' + str(thisv) + ' = np.minimum('+term1 + ', ' + term2+')'
+        )
+        
+    def max(self, items):
+        # TODO: check that this is parallel max
+        # paper says this is == ts_min, but that doesn't parse for alpha 71
+        term2 = self.stack.pop()
+        term1 = self.stack.pop()
+        thisv = self.vcounter.next()
+        self.stack.append('v' + str(thisv))
+        self.cmdlist.append(
+            'v' + str(thisv) + ' = np.maximum('+term1 + ', ' + term2+')'
+        )
+        
+    def powerof(self, items):
         """ Element-wise power """
 
         term2 = self.stack.pop()
@@ -99,6 +128,17 @@ class MyTransformer(Transformer):
             'v' + str(thisv) + ' = np.power(' + term1 + ', ' + term2 + ')'
         )
 
+    def signedpower(self, items):
+        """ np.sign(term1)*np.power(np.abs(term1), term2)  """
+
+        term2 = self.stack.pop()
+        term1 = self.stack.pop()
+        thisv = self.vcounter.next()
+        self.stack.append('v' + str(thisv))
+        self.cmdlist.append(
+            'v' + str(thisv) + ' = np.sign('+term1+')*np.power(np.abs(' + term1 + '), ' + term2 + ')'
+        )
+        
 
     def minus(self, items):
         term2 = self.stack.pop()
@@ -188,6 +228,7 @@ class MyTransformer(Transformer):
         )
 
     def equals(self, items):
+        # TODO: do we want np.isclose or np.allcose?
         term2 = self.stack.pop()
         term1 = self.stack.pop()
         thisv = self.vcounter.next()
@@ -262,13 +303,19 @@ class MyTransformer(Transformer):
         )
 
     def ts_argmax(self, items):
-        # check that the day is what we want
+        # check that the day is what we want: how to confirm this?
+        # The behavior of `move_argmax` and associated functions in Numpy
+        # and Bottleneck is that they index based on the shape of the array.
+        # In this case the time increases along the 0 axis so, if window is
+        # 10 days, and the max is in the most recent day, it will return 9;
+        # If the max is in the earliest day it will return zero. I add "1" to
+        # this imagining a mutiplier, and do not want zero to kill values.
         v1 = self.stack.pop()
         thisv = self.vcounter.next()
         self.window = self.window + int(items[1])
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
-            'v' + str(thisv) + ' = bn.move_argmax(' + v1 + ', window=' + items[1] + ', min_count=1,  axis=0)'
+            'v' + str(thisv) + ' = 1 + bn.move_argmax(' + v1 + ', window=' + items[1] + ', min_count=1,  axis=0)'
         )
 
     def ts_argmin(self, items):
@@ -278,11 +325,11 @@ class MyTransformer(Transformer):
         self.window = self.window + int(items[1])
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
-            'v' + str(thisv) + ' = bn.move_argmin(' + v1 + ', window=' + items[1] + ', min_count=1,  axis=0)'
+            'v' + str(thisv) + ' = 1 + bn.move_argmin(' + v1 + ', window=' + items[1] + ', min_count=1,  axis=0)'
         )
 
     def ts_rank(self, items):
-        # check that the day is what we want
+        # Returns ranks 1-N; largest value is rank N
         v1 = self.stack.pop()
         thisv = self.vcounter.next()
         self.window = self.window + int(items[1])
