@@ -111,3 +111,4 @@ venv.bak/
 *.db
 src
 alpha*.png
+.DS_store
