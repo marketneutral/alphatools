@@ -25,11 +25,16 @@ class MyTransformer(Transformer):
 
     def rank(self, items):
         term1 = self.stack.pop()
-        thisv = self.vcounter.next()
-        self.stack.append('v' + str(thisv))
+        v1 = self.vcounter.next()
         self.cmdlist.append(
-            'v' + str(thisv) + ' = np.apply_along_axis(rankdata, 1, ' + term1 +', method="ordinal")'
+            'v' + str(v1) + ' = np.apply_along_axis(rankdata, 1, ' + term1 +', method="ordinal")'
         )
+        v2 = self.vcounter.next()
+        self.stack.append('v' + str(v2))
+        self.cmdlist.append(
+            'v' + str(v2) + ' = np.divide(v'+str(v1)+'.astype(float), np.sum(~np.isnan(v'+str(v1)+'), axis=1).reshape(v'+str(v1)+'.shape[0], 1))'
+        )
+        
     
 #    def close(self, items):
 #        thisv = self.vcounter.next()
@@ -303,39 +308,43 @@ class MyTransformer(Transformer):
         )
 
     def ts_argmax(self, items):
-        # check that the day is what we want: how to confirm this?
-        # The behavior of `move_argmax` and associated functions in Numpy
-        # and Bottleneck is that they index based on the shape of the array.
-        # In this case the time increases along the 0 axis so, if window is
-        # 10 days, and the max is in the most recent day, it will return 9;
-        # If the max is in the earliest day it will return zero. I add "1" to
-        # this imagining a mutiplier, and do not want zero to kill values.
+        """
+        The behavior of `move_argmax` and associated functions in Numpy
+        and Bottleneck is that they index based on the shape of the array.
+        In this case the time increases along the 0 axis so, if window is
+        10 days, and the max is in the most recent day, it will return 9;
+        If the max is in the earliest day it will return zero. I add "1" to
+        this imagining a mutiplier, and do not want zero to kill values.
+        It is then rescaled to the interval (0,1] to match the `rank` style.
+        """
         v1 = self.stack.pop()
         thisv = self.vcounter.next()
         self.window = self.window + int(items[1])
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
-            'v' + str(thisv) + ' = 1 + bn.move_argmax(' + v1 + ', window=' + items[1] + ', min_count=1,  axis=0)'
+            'v' + str(thisv) + ' = (1. + bn.move_argmax(' + v1 + ', window=' + items[1] + ', min_count=1,  axis=0))/' + items[1]
         )
 
     def ts_argmin(self, items):
-        # check that the day is what we want
         v1 = self.stack.pop()
         thisv = self.vcounter.next()
         self.window = self.window + int(items[1])
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
-            'v' + str(thisv) + ' = 1 + bn.move_argmin(' + v1 + ', window=' + items[1] + ', min_count=1,  axis=0)'
+            'v' + str(thisv) + ' = (1. + bn.move_argmin(' + v1 + ', window=' + items[1] + ', min_count=1,  axis=0))/' + items[1]
         )
 
     def ts_rank(self, items):
         # Returns ranks 1-N; largest value is rank N
+        # `bn.move_rank` returns values in the range -1 to 1.0, so we add 1
+        # to get 0-2 and then divide by 2.0 to get [0,1]
+        # note that we want [1/N, 1]
         v1 = self.stack.pop()
         thisv = self.vcounter.next()
         self.window = self.window + int(items[1])
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
-            'v' + str(thisv) + ' = bn.move_rank(' + v1 + ', window=' + items[1] + ', min_count=1,  axis=0)'
+            'v' + str(thisv) + ' = (1. + bn.move_rank(' + v1 + ', window=' + items[1] + ', min_count=1,  axis=0))/2.0'
         )
         
     def stddev(self, items):
