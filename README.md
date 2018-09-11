@@ -165,10 +165,10 @@ Note that there is no reference implementation of the expression-style alpha syn
 
 It is also possible to use the "bring your own data" functionality provided by the `Factory` object in an expression alpha. This is done with the `factory` expression. The syntax is
 
-* `factory("<dataset>")`: where <dataset> is the name you would pass into the `Factory` object. Concretely, if you have a dataset, "sample", defined in the `data_sources.json` file, you can access it in an expression as:
+* `factory("<dataset>")`: where `"<dataset>"` is the name you would pass into the `Factory` object. Concretely, if you have a dataset, "sample", defined in the `data_sources.json` file, you can access it in an expression as:
 
 ```
-(returns > 0) ? (factory("sample")) : -sum(returns, 5)
+(returns > 0) ? factory("sample") : -sum(returns, 5)
 ```
 
 This compiles to the `Pipeline` factor as:
