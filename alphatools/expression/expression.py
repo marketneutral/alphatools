@@ -24,14 +24,10 @@ class MyTransformer(Transformer):
         
     def factory(self, items):
         self.imports.add('from alphatools.data import Factory')
-        thisv = self.vcounter.next()
-        self.stack.append('v' + str(thisv))
         this_factory = self.factory_counter.next()
+        self.stack.append('factory' + str(this_factory))
         self.factories[this_factory] = items[0]
         self.inputs['factory'+str(this_factory)] = 'Factory['+items[0]+'].value'
-        self.cmdlist.append(
-            'v' + str(thisv) + ' = factory' + str(this_factory)
-        )
         
     def neg(self, items):
         term1 = self.stack.pop()

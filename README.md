@@ -163,9 +163,9 @@ Note that there is no reference implementation of the expression-style alpha syn
 
 ### Using Your Own Data in Expression Alphas
 
-It is also possible to use the "bring your own data" functionality provided by the `Factory` object in an expression alpha. This is done with the `factory` expression. The syntax is
+It is also possible to use the "bring your own data" functionality provided by the `Factory` object in an expression alpha. This is done with one or more `factory` expressions. The syntax is
 
-* `factory("<dataset>")`: where `"<dataset>"` is the name you would pass into the `Factory` object. Concretely, if you have a dataset, "sample", defined in the `data_sources.json` file, you can access it in an expression as:
+* `factory("<dataset>")`: where `"<dataset>"` is the name you would pass into the `Factory` object (for now assuming the data is in a column called "value"). Concretely, if you have a dataset, "sample", defined in the `data_sources.json` file, you can access it in an expression as:
 
 ```
 (returns > 0) ? factory("sample") : -sum(returns, 5)
@@ -180,12 +180,11 @@ class ExprAlpha_1(CustomFactor):
 
     def compute(self, today, assets, out, returns, factory0):
         v0 = np.greater(returns, 0)
-        v1 = factory0
-        v2 = pd.DataFrame(data=returns).rolling(
+        v1 = pd.DataFrame(data=returns).rolling(
             window=5, center=False, min_periods=1).sum().values
-        v3 = -v2
-        v4 = np.where(v0, v1, v3)
-        out[:] = v4[-1]
+        v2 = -v1
+        v3 = np.where(v0, factory0, v2)
+        out[:] = v3[-1]
 ```
 
 
