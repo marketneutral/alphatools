@@ -14,7 +14,25 @@ class MyTransformer(Transformer):
         self.vcounter = itertools.count()
         self.stack = []
         
+        self.imports = set()
 
+        self.factory_counter = itertools.count()
+        self.factories = dict()
+
+        self.inputs = dict()
+
+        
+    def factory(self, items):
+        self.imports.add('from alphatools.data import Factory')
+        thisv = self.vcounter.next()
+        self.stack.append('v' + str(thisv))
+        this_factory = self.factory_counter.next()
+        self.factories[this_factory] = items[0]
+        self.inputs['factory'+str(this_factory)] = 'Factory['+items[0]+'].value'
+        self.cmdlist.append(
+            'v' + str(thisv) + ' = factory' + str(this_factory)
+        )
+        
     def neg(self, items):
         term1 = self.stack.pop()
         thisv = self.vcounter.next()
@@ -24,6 +42,7 @@ class MyTransformer(Transformer):
         )
 
     def rank(self, items):
+        self.imports.add("from scipy.stats import rankdata")
         term1 = self.stack.pop()
         v1 = self.vcounter.next()
         self.cmdlist.append(
@@ -56,19 +75,32 @@ class MyTransformer(Transformer):
         pass
 
     def close(self, items):
-        #import pdb; pdb.set_trace()
+        self.imports.add('from zipline.pipeline.data import USEquityPricing as USEP')
+        self.inputs['close'] = 'USEP.close'
         self.stack.append('close')
 
     def high(self, items):
+        self.imports.add('from zipline.pipeline.data import USEquityPricing as USEP')
+        self.inputs['high'] = 'USEP.high'
         self.stack.append('high')
 
     def low(self, items):
+        self.imports.add('from zipline.pipeline.data import USEquityPricing as USEP')
+        self.inputs['low'] = 'USEP.low'
         self.stack.append('low')
         
     def volume(self, items):
+        self.imports.add('from zipline.pipeline.data import USEquityPricing as USEP')
+        self.inputs['volume'] = 'USEP.volume'
         self.stack.append('volume')
 
     def vwap(self, items):
+        self.imports.add('from zipline.pipeline.data import USEquityPricing as USEP')
+        self.inputs['close'] = 'USEP.close'
+        self.inputs['opens'] = 'USEP.open'
+        self.inputs['high'] = 'USEP.high'
+        self.inputs['low'] = 'USEP.low'
+        
         thisv = self.vcounter.next()
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
@@ -76,6 +108,9 @@ class MyTransformer(Transformer):
         )
 
     def adv(self, items):
+        self.imports.add('from zipline.pipeline.data import USEquityPricing as USEP')
+        self.inputs['close'] = 'USEP.close'
+        self.inputs['volume'] = 'USEP.volume'
         thisv = self.vcounter.next()
         self.stack.append('v' + str(thisv))
         self.window = max([self.window, int(items[0])+2])
@@ -90,6 +125,8 @@ class MyTransformer(Transformer):
 #        )
 
     def opens(self, items):
+        self.imports.add('from zipline.pipeline.data import USEquityPricing as USEP')
+        self.inputs['opens'] = 'USEP.open'
         self.stack.append('opens')
                 
     def div(self, items):
@@ -262,6 +299,8 @@ class MyTransformer(Transformer):
         )
         
     def returns(self, items):
+        self.imports.add("from zipline.pipeline.factors import Returns")
+        self.inputs['returns'] = 'Returns(window_length=2)'
         self.stack.append('returns')
         #thisv = self.vcounter.next()
         #self.window = self.window+1
@@ -439,6 +478,10 @@ class MyTransformer(Transformer):
 
         data = data - per_day_per_asset_ind_mean
         """
+        self.imports.add("from alphatools.ics import Sector, SubIndustry")
+        self.inputs['sector'] = 'Sector()'
+        self.inputs['subindustry'] = 'SubIndustry()'
+
         groupmap = {
             'IndClass.subindustry': 'subindustry',
             'IndClass.sector': 'sector',
@@ -484,8 +527,8 @@ class MyTransformer(Transformer):
         self.cmdlist.append(
             'out[:] = ' + v1 + '[-1]'
         )
-        
-        return ["window_length = "+str(self.window)] + self.cmdlist
+        return self
+        #return ["window_length = "+str(self.window)] + self.cmdlist
 
 
 class ExpressionAlpha():
@@ -512,24 +555,31 @@ class ExpressionAlpha():
         return self
 
     def transform(self):
-        self.raw_np_list = MyTransformer().transform(self.tree)
+        self.transformed = MyTransformer().transform(self.tree)
         return self
 
     def generate_pipeline_code(self):
-        raw_np_list = self.raw_np_list
-# from __future__ import division
-        self.imports = ["from __future__ import division\n"]
-        self.imports.append("from zipline.pipeline.data import USEquityPricing as USEP\n")
-        self.imports.append("from zipline.pipeline.factors import CustomFactor, Returns\n")
-        self.imports.append("from alphatools.ics import Sector, SubIndustry\n")
+        raw_np_list = \
+            ["window_length = "+str(self.transformed.window)] + \
+            self.transformed.cmdlist
+        raw_imports = \
+            self.transformed.imports
+
+        (data_names, factor_names) = zip(*self.transformed.inputs.iteritems())
+        
+        self.imports = ['{0}\n'.format(imp) for imp in raw_imports]
+        self.imports.append("from zipline.pipeline.factors import CustomFactor\n")
         self.imports.append("import numpy as np\n")
         self.imports.append("import bottleneck as bn\n")
         self.imports.append("import pandas as pd\n")
-        self.imports.append("from scipy.stats import rankdata\n\n")
+        self.imports = ["from __future__ import division\n"] + \
+            self.imports
+        
         self.code = ["class ExprAlpha_1(CustomFactor):"]
-        self.code.append("    inputs = [Returns(window_length=2), USEP.open, USEP.high, USEP.low, USEP.close, USEP.volume, Sector(), SubIndustry()]")
+
+        self.code.append("    inputs = [" + ', '.join(factor_names) + "]")
         self.code.append('    {0}'.format(raw_np_list[0]))
-        self.code.append("    def compute(self, today, assets, out, returns, opens, high, low, close, volume, sector, subindustry):")
+        self.code.append("    def compute(self, today, assets, out, " + ', '.join(data_names) + "):")
         lst = ['        {0}'.format(elem) for elem in raw_np_list]
 
         self.code = self.code + lst[1:]

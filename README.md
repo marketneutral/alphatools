@@ -137,11 +137,10 @@ You can see the resuling `Pipeline` code (though this is not necessary to use th
 
 ```python
 class ExprAlpha_1(CustomFactor):
-    inputs = [Returns(window_length=2), USEP.open, USEP.high,
-              USEP.low, USEP.close, USEP.volume, Sector(), SubIndustry()]
+    inputs = [USEP.close]
     window_length = 17
 
-    def compute(self, today, assets, out, returns, opens, high, low, close, volume, sector, subindustry):
+    def compute(self, today, assets, out, close):
         v0 = close - np.roll(close, 1, axis=0)
         v1 = bn.move_min(v0, window=5, min_count=1,  axis=0)
         v2 = np.less(0, v1)
@@ -161,6 +160,33 @@ class ExprAlpha_1(CustomFactor):
 There is no compile-time optimization of the AST at all! What is happening is that the compiler walks down the AST and converts each node into a Python equivalent (`numpy`, `bottleneck`, and/or `pandas`) expression, keeping track of the call stack so that future references to prior calculations are correct. The resulting Python code is in the style of "three-address code". There is of course plenty of optimization which can be done.
 
 Note that there is no reference implementation of the expression-style alpha syntax to test against and that there are many specific details lacking the paper. As such, this implementation makes some assumptions where necessary (as a simple example, the paper does not specify if `rank` is ascending or descending, however, it obviously should be ascending as a larger raw value should produce a larger numberical rank to keep the alpha vector *directly* proportional). This is experimental and I have created only a handful of tests.
+
+### Using Your Own Data in Expression Alphas
+
+It is also possible to use the "bring your own data" functionality provided by the `Factory` object in an expression alpha. This is done with the `factory` expression. The syntax is
+
+* `factory("<dataset>")`: where <dataset> is the name you would pass into the `Factory` object. Concretely, if you have a dataset, "sample", defined in the `data_sources.json` file, you can access it in an expression as:
+
+```
+(returns > 0) ? (factory("sample")) : -sum(returns, 5)
+```
+
+This compiles to the `Pipeline` factor as:
+
+```python
+class ExprAlpha_1(CustomFactor):
+    inputs = [Returns(window_length=2), Factory["sample"].value]
+    window_length = 7
+
+    def compute(self, today, assets, out, returns, factory0):
+        v0 = np.greater(returns, 0)
+        v1 = factory0
+        v2 = pd.DataFrame(data=returns).rolling(
+            window=5, center=False, min_periods=1).sum().values
+        v3 = -v2
+        v4 = np.where(v0, v1, v3)
+        out[:] = v4[-1]
+```
 
 
 ## Installation
