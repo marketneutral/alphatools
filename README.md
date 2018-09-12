@@ -2,6 +2,9 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
 
+[![Python](https://img.shields.io/badge/Python-2.7-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
+
 This package provides functions to make the equity alpha factor research process more accessible and productive. Convenience functions sit on top of [zipline](https://github.com/quantopian/zipline) and, specifically, the [`Pipeline`](https://www.quantopian.com/help#pipeline-api) cross-sectional classes and functions in that package. `alphatools` allows you to 
 
 - `run_pipeline` in a Jupyter notebook (or from any arbitrary Python code) **in your local environment**,
