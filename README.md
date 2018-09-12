@@ -1,7 +1,6 @@
 <img src="https://user-images.githubusercontent.com/16124573/45173356-f3b9f180-b1d5-11e8-97ba-5e92154c630a.png" width="400">
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
-
 [![Python](https://img.shields.io/badge/Python-2.7-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 
