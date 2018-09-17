@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import time
 from zipline.data import bundles
@@ -8,6 +9,17 @@ from zipline.pipeline.loaders import USEquityPricingLoader
 from zipline.utils.calendars import get_calendar
 from zipline.assets._assets import Equity
 from zipline.pipeline.loaders.blaze import BlazeLoader, from_blaze
+from zipline.utils.run_algo import load_extensions
+
+
+# Load extensions.py; this allows you access to custom bundles
+load_extensions(
+    default=True,
+    extensions=[],
+    strict=True,
+    environ=os.environ,
+)
+
 
 # Set-Up Pricing Data Access
 trading_calendar = get_calendar('NYSE')
@@ -51,6 +63,8 @@ def run_pipeline(pipeline, start_date, end_date):
         pd.Timestamp(end_date, tz='utc')
     )
 
+
+
 data = DataPortal(
     bundle_data.asset_finder,
     trading_calendar=trading_calendar,
@@ -59,6 +73,35 @@ data = DataPortal(
     equity_daily_reader=bundle_data.equity_daily_bar_reader,
     adjustment_reader=bundle_data.adjustment_reader,
 )
+
+def set_bundle(name, calendar='NYSE'):
+    global trading_calendar
+    global bundle
+    global bundle_data
+    global engine
+    global choose_loader
+    global data
+
+    bundle = name
+    trading_calendar = get_calendar(calendar)
+    bundle_data = bundles.load(bundle)
+    engine = SimplePipelineEngine(
+        get_loader=choose_loader,
+        calendar=trading_calendar.all_sessions,
+        asset_finder=bundle_data.asset_finder,
+    )
+
+    data = DataPortal(
+        bundle_data.asset_finder,
+        trading_calendar=trading_calendar,
+        first_trading_day=bundle_data.equity_daily_bar_reader.first_trading_day,
+        equity_minute_reader=None,
+        equity_daily_reader=bundle_data.equity_daily_bar_reader,
+        adjustment_reader=bundle_data.adjustment_reader,
+    )
+
+        
+    
 
 def get_symbols(tickers, as_of_date=None):
     if (type(tickers)==str):

@@ -5,5 +5,6 @@ from research import (
     get_pricing,
     get_symbols,
     make_factor_plot,
-    make_quantile_plot
+    make_quantile_plot,
+    set_bundle
 )
