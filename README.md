@@ -7,8 +7,9 @@
 This package provides functions to make the equity alpha factor research process more accessible and productive. Convenience functions sit on top of [zipline](https://github.com/quantopian/zipline) and, specifically, the [`Pipeline`](https://www.quantopian.com/help#pipeline-api) cross-sectional classes and functions in that package. `alphatools` allows you to 
 
 - `run_pipeline` in a Jupyter notebook (or from any arbitrary Python code) **in your local environment**,
-- create `Pipeline` factors **at runtime** on **arbitrary data sources** (just expose the endpoint for data sitting somewhere, specify the schema, and...it's available for use in `Pipeline`!), and 
-- parse and compile **"expression" style alphas** as described the paper ["101 Formulaic Alphas"](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2701346) into `Pipeline` factors.
+- create `Pipeline` factors **at runtime** on **arbitrary data sources** (just expose the endpoint for data sitting somewhere, specify the schema, and...it's available for use in `Pipeline`!),
+- parse and compile **"expression" style alphas** as described the paper ["101 Formulaic Alphas"](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2701346) into `Pipeline` factors, and
+- work with and plot ingested **pricing data from an arbitrary bundle** with a `get_pricing(...)` function call.
 
 For example, with `alphatools`, you can, say, within a Jupyter notebook,
 
