@@ -15,7 +15,13 @@ def value_at_risk(
     return np.percentile(portfolio_returns, 100 * (1-alpha))
 
 
-def calc_portfolio_risk(context, data, risk_func, hist_days=180):
+def calc_portfolio_risk(
+        context,
+        data,
+        risk_func,
+        hist_days=180,
+        **kwargs):
+
     positions = context.portfolio.positions
     positions_index = pd.Index(positions)
     share_counts = pd.Series(  
@@ -39,5 +45,5 @@ def calc_portfolio_risk(context, data, risk_func, hist_days=180):
     daily_rets = daily_rets - daily_rets.mean(skipna=True)
     daily_rets = daily_rets.fillna(0.0)
 
-    risk = risk_func(current_weights.values, daily_rets)
+    risk = risk_func(current_weights.values, daily_rets, **kwargs)
     return risk
