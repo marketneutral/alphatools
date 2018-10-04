@@ -1,4 +1,6 @@
 from __future__ import print_function
+#import theano
+#theano.config.gcc.cxxflags = "-Wno-c++11-narrowing"
 import pymc3 as pm
 
 if __name__=='__main__':

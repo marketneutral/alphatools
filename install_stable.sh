@@ -6,7 +6,10 @@ pip install zipline==1.3.0 --no-cache-dir
 pip install ipykernel --no-cache-dir
 pip install alphalens==0.3.2 --no-cache-dir
 pip install pyfolio --no-cache-dir
+
+# must append to .bashrc
 export MKL_THREADING_LAYER=GNU       # required for using mkl-service
+export THEANO_FLAGS='gcc.cxxflags=-Wno-c++11-narrowing'
 cd ..
 pip install -e alphatools --no-cache-dir
 python -m ipykernel install --user --name env_alphatools_stable --display-name "Python 3.5 (env_alphatools_stable)"
