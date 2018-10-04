@@ -1,3 +1,4 @@
+from __future__ import print_function
 import pymc3 as pm
 
 if __name__=='__main__':
