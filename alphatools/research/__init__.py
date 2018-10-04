@@ -1,4 +1,4 @@
-from research import (
+from .research import (
     loaders,
     blaze_loader,
     run_pipeline,

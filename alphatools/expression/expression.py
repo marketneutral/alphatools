@@ -4,6 +4,7 @@ import itertools
 from lark import Lark, Transformer
 from os import path
 from scipy.stats import rankdata
+from six import iteritems, next
 
 
 class MyTransformer(Transformer):
@@ -31,7 +32,7 @@ class MyTransformer(Transformer):
         
     def neg(self, items):
         term1 = self.stack.pop()
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
             'v' + str(thisv) + ' = -' + term1
@@ -40,11 +41,11 @@ class MyTransformer(Transformer):
     def rank(self, items):
         self.imports.add("from scipy.stats import rankdata")
         term1 = self.stack.pop()
-        v1 = self.vcounter.next()
+        v1 = next(self.vcounter)
         self.cmdlist.append(
             'v' + str(v1) + ' = np.apply_along_axis(rankdata, 1, ' + term1 +', method="ordinal")'
         )
-        v2 = self.vcounter.next()
+        v2 = next(self.vcounter)
         self.stack.append('v' + str(v2))
         self.cmdlist.append(
             'v' + str(v2) + ' = np.divide(v'+str(v1)+'.astype(float), np.sum(~np.isnan(v'+str(v1)+'), axis=1).reshape(v'+str(v1)+'.shape[0], 1))'
@@ -59,7 +60,7 @@ class MyTransformer(Transformer):
 #        )
 
     def cap(self, items):
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
             'v' + str(thisv) + ' = 1.0'
@@ -97,7 +98,7 @@ class MyTransformer(Transformer):
         self.inputs['high'] = 'USEP.high'
         self.inputs['low'] = 'USEP.low'
         
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
             'v' + str(thisv) + ' = (close + (opens + high + low)/3)/2'
@@ -107,7 +108,7 @@ class MyTransformer(Transformer):
         self.imports.add('from zipline.pipeline.data import USEquityPricing as USEP')
         self.inputs['close'] = 'USEP.close'
         self.inputs['volume'] = 'USEP.volume'
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.stack.append('v' + str(thisv))
         self.window = max([self.window, int(items[0])+2])
         self.cmdlist.append(
@@ -128,7 +129,7 @@ class MyTransformer(Transformer):
     def div(self, items):
         term2 = self.stack.pop()
         term1 = self.stack.pop()
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
             'v' + str(thisv) + ' = ' + term1 + ' / ' + term2
@@ -138,7 +139,7 @@ class MyTransformer(Transformer):
         # TODO: check that this is parallel min 
         term2 = self.stack.pop()
         term1 = self.stack.pop()
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
             'v' + str(thisv) + ' = np.minimum('+term1 + ', ' + term2+')'
@@ -149,7 +150,7 @@ class MyTransformer(Transformer):
         # paper says this is == ts_min, but that doesn't parse for alpha 71
         term2 = self.stack.pop()
         term1 = self.stack.pop()
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
             'v' + str(thisv) + ' = np.maximum('+term1 + ', ' + term2+')'
@@ -160,7 +161,7 @@ class MyTransformer(Transformer):
 
         term2 = self.stack.pop()
         term1 = self.stack.pop()
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
             'v' + str(thisv) + ' = np.power(' + term1 + ', ' + term2 + ')'
@@ -171,7 +172,7 @@ class MyTransformer(Transformer):
 
         term2 = self.stack.pop()
         term1 = self.stack.pop()
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
             'v' + str(thisv) + ' = np.sign('+term1+')*np.power(np.abs(' + term1 + '), ' + term2 + ')'
@@ -181,7 +182,7 @@ class MyTransformer(Transformer):
     def minus(self, items):
         term2 = self.stack.pop()
         term1 = self.stack.pop()
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
             'v' + str(thisv) + ' = ' + term1 + ' - ' + term2
@@ -190,7 +191,7 @@ class MyTransformer(Transformer):
     def plus(self, items):
         term2 = self.stack.pop()
         term1 = self.stack.pop()
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
             'v' + str(thisv) + ' = ' + term1 + ' + ' + term2
@@ -199,7 +200,7 @@ class MyTransformer(Transformer):
     def mult(self, items):
         term2 = self.stack.pop()
         term1 = self.stack.pop()
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
             'v' + str(thisv) + ' = ' + term1 + '*' + term2
@@ -207,7 +208,7 @@ class MyTransformer(Transformer):
 
     def log(self, items):
         term1 = self.stack.pop()
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
             'v' + str(thisv) + ' = np.log(' + term1 + ')'
@@ -215,7 +216,7 @@ class MyTransformer(Transformer):
 
     def abs(self, items):
         term1 = self.stack.pop()
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
             'v' + str(thisv) + ' = np.abs(' + term1 + ')'
@@ -223,7 +224,7 @@ class MyTransformer(Transformer):
 
     def sign(self, items):
         term1 = self.stack.pop()
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
             'v' + str(thisv) + ' = np.sign(' + term1 + ')'
@@ -232,7 +233,7 @@ class MyTransformer(Transformer):
     def scale(self, items):
         # TODO: 101 paper says scaled sum(abs)==a; silent on mean
         term1 = self.stack.pop()
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
             'v' + str(thisv) + ' = np.apply_along_axis(lambda x: (x - np.nanmean(x))/np.nansum(np.abs(x - np.nanmean(x))), 1, ' + term1 +')'
@@ -241,7 +242,7 @@ class MyTransformer(Transformer):
     def mult(self, items):
         term2 = self.stack.pop()
         term1 = self.stack.pop()
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
             'v' + str(thisv) + ' = ' + term1 + '*' + term2
@@ -250,7 +251,7 @@ class MyTransformer(Transformer):
     def greaterthan(self, items):
         term2 = self.stack.pop()
         term1 = self.stack.pop()
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
             'v' + str(thisv) + ' = np.greater(' + term1 + ', ' + term2 + ')'
@@ -259,7 +260,7 @@ class MyTransformer(Transformer):
     def lessthan(self, items):
         term2 = self.stack.pop()
         term1 = self.stack.pop()
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
             'v' + str(thisv) + ' = np.less(' + term1 + ', ' + term2 + ')'
@@ -269,7 +270,7 @@ class MyTransformer(Transformer):
         # TODO: do we want np.isclose or np.allcose?
         term2 = self.stack.pop()
         term1 = self.stack.pop()
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
             'v' + str(thisv) + ' = np.isclose(' + term1 + ', ' + term2 + ')'
@@ -278,7 +279,7 @@ class MyTransformer(Transformer):
     def logicalor(self, items):
         term2 = self.stack.pop()
         term1 = self.stack.pop()
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
             'v' + str(thisv) + ' = np.logical_or(' + term1 + ', ' + term2 + ')'
@@ -288,7 +289,7 @@ class MyTransformer(Transformer):
         term3 = self.stack.pop()
         term2 = self.stack.pop()
         term1 = self.stack.pop()
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
             'v' + str(thisv) + ' = np.where(' + term1 + ', ' + term2 + ', ' + term3 + ')'
@@ -308,7 +309,7 @@ class MyTransformer(Transformer):
         
     def delta(self, items):
         term1 = self.stack.pop()
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.window = self.window+int(items[1])
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
@@ -317,7 +318,7 @@ class MyTransformer(Transformer):
 
     def delay(self, items):
         term1 = self.stack.pop()
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.window = self.window+int(items[1])
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
@@ -326,7 +327,7 @@ class MyTransformer(Transformer):
         
     def ts_max(self, items):
         v1 = self.stack.pop()
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.window = self.window + int(items[1])
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
@@ -335,7 +336,7 @@ class MyTransformer(Transformer):
 
     def ts_min(self, items):
         v1 = self.stack.pop()
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.window = self.window + int(items[1])
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
@@ -353,7 +354,7 @@ class MyTransformer(Transformer):
         It is then rescaled to the interval (0,1] to match the `rank` style.
         """
         v1 = self.stack.pop()
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.window = self.window + int(items[1])
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
@@ -362,7 +363,7 @@ class MyTransformer(Transformer):
 
     def ts_argmin(self, items):
         v1 = self.stack.pop()
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.window = self.window + int(items[1])
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
@@ -375,7 +376,7 @@ class MyTransformer(Transformer):
         # to get 0-2 and then divide by 2.0 to get [0,1]
         # note that we want [1/N, 1]
         v1 = self.stack.pop()
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.window = self.window + int(items[1])
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
@@ -385,7 +386,7 @@ class MyTransformer(Transformer):
     def stddev(self, items):
         # check that the day is what we want
         v1 = self.stack.pop()
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.window = self.window + int(items[1])
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
@@ -394,7 +395,7 @@ class MyTransformer(Transformer):
 
     def sum(self, items):
         v1 = self.stack.pop()
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.window = self.window + int(items[1])
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
@@ -403,7 +404,7 @@ class MyTransformer(Transformer):
 
     def product(self, items):
         v1 = self.stack.pop()
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.window = self.window + int(items[1])
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
@@ -413,7 +414,7 @@ class MyTransformer(Transformer):
     def correlation(self, items):
         v2 = self.stack.pop()
         v1 = self.stack.pop()
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.window = self.window + int(items[2])
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
@@ -423,7 +424,7 @@ class MyTransformer(Transformer):
     def covariance(self, items):
         v2 = self.stack.pop()
         v1 = self.stack.pop()
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.window = self.window + int(items[2])
         self.stack.append('v' + str(thisv))
         self.cmdlist.append(
@@ -432,14 +433,14 @@ class MyTransformer(Transformer):
         
     def decay_linear(self, items):
         v1 = self.stack.pop()
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         days = int(items[1])
         self.window = self.window + days
         v2 = 'v'+str(thisv)
         self.cmdlist.append(
             v2 + ' = (np.arange(' + items[1] + ')+1.)/np.sum(np.arange(' + items[1]+ ')+1.)'
         )
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.stack.append('v' + str(thisv))
 
         self.cmdlist.append(
@@ -494,7 +495,7 @@ class MyTransformer(Transformer):
         
         # set up ICS matrix (like one-hot-encoded matrix); we add 1 to the
         # ics scheme bc -1 is a missing, so increment all by 1
-        ohe = 'v' + str(self.vcounter.next())
+        ohe = 'v' + str(next(self.vcounter))
         self.cmdlist.append(
             ohe + ' = np.zeros(('+group_label+'.shape[1], '+group_label+'.max()+2))'
         )
@@ -504,12 +505,12 @@ class MyTransformer(Transformer):
 
         # get industry mean, per industry on columns, per day on rows
         # and the dot(ohe.T) gives per stock industry mean
-        ind_mean = 'v' + str(self.vcounter.next())
+        ind_mean = 'v' + str(next(self.vcounter))
         self.cmdlist.append(
             ind_mean + ' = (np.nan_to_num('+v1+'.dot('+ohe+')/'+ohe+'.sum(axis=0))).dot('+ohe+'.T)'
         )
         
-        thisv = self.vcounter.next()
+        thisv = next(self.vcounter)
         self.stack.append('v' + str(thisv))
         # subtract the per stock industry mean
         self.cmdlist.append(
@@ -561,7 +562,7 @@ class ExpressionAlpha():
         raw_imports = \
             self.transformed.imports
 
-        (data_names, factor_names) = zip(*self.transformed.inputs.iteritems())
+        (data_names, factor_names) = zip(*iteritems(self.transformed.inputs))
         
         self.imports = ['{0}\n'.format(imp) for imp in raw_imports]
         self.imports.append("from zipline.pipeline.factors import CustomFactor\n")

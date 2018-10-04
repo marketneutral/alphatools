@@ -1,7 +1,7 @@
 <img src="https://user-images.githubusercontent.com/16124573/45173356-f3b9f180-b1d5-11e8-97ba-5e92154c630a.png" width="400">
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Python](https://img.shields.io/badge/Python-2.7-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Python](https://img.shields.io/badge/Python-3.5-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 
 This package provides functions to make the equity alpha factor research process more accessible and productive. Convenience functions sit on top of [zipline](https://github.com/quantopian/zipline) and, specifically, the [`Pipeline`](https://www.quantopian.com/help#pipeline-api) cross-sectional classes and functions in that package. `alphatools` allows you to 
@@ -194,31 +194,20 @@ class ExprAlpha_1(CustomFactor):
 
 ## Installation
 
-These install steps worked for me on Max OS X. Minimally you need a proper install of `zipline`. Zipline is built against certain version of `numpy` and `pandas` which can make it tricky. For example, if you want to use `scikit-learn` you have to compile it versus that `numpy` version specifically (needing `gcc` via Apple dev tools or via `brew`). Currently this package has been developed for Python 2.7. The install process that worked for me is as follows.
-
-### Create Zipline Environment
-
-```
-conda create -n py27 python=2.7 anaconda
-source activate py27
-conda install -c Quantopian zipline=1.1.1
-conda install pandas-datareader==0.2.1
-conda install networkx==1.9.1
-pip install scikit-learn --no-binary :all:
-zipline ingest
-```
-
-### Install `alphatools`
-
-```
-pip install alphatools
-```
-
-This package is under very active development. For the time being, better is likely 
+Run the following in order:
 
 ```
 git clone https://github.com/marketneutral/alphatools
-pip install -e alphatools
+cd alphatools
+conda create -n env_alphatools -y python=3.5 python=3.5 numpy=1.11.3 pandas=0.18.1 scipy=0.17.1 libgfortran=3.0 pip
+conda activate env_alphatools
+python -m pip install -r requirements_stable.txt --no-cache-dir
+python -m pip install -r requirements_blaze_stable.txt --no-cache-dir
+pip install zipline==1.3.0 --no-cache-dir
+pip install ipykernel --no-cache-dir
+cd ..
+pip install -e alphatools --no-cache-dir
+python -m ipykernel install --user --name env_alphatools --display-name "Python 3.5 (env_alphatools)"
 ```
 
 Note that when you run `zipline ingest` the security master is built from scratch and each `sid` is assigned at that time. You must map the `Sector`, `Industry` classifiers in this package **and all your own data** after every `zipline ingest`. You can map the `Sector` and `Industry` classifiers with
@@ -227,16 +216,10 @@ Note that when you run `zipline ingest` the security master is built from scratc
 alphatools ingest
 ```
 
-`zipline` requires a version of `blaze` which is not on PyPI. As such, you can get the compatible version with the following command. Note that this runs a `pip install` so make sure you have activated the environment.
+
+You'll want to make the `env_alphatools` env available to Jupyter. To do this run
 
 ```
-alphatools get_blaze
-```
-
-You'll want to make the `py27` env available to Jupyter. To do this run
-
-```
-python -m ipykernel install --user --name py27 --display-name "Python 2.7 (py27)"
 ```
 
 

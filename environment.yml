@@ -1,0 +1,30 @@
+# conda create -n testenv python=3.5 python=3.5 numpy=1.11.3 pandas=0.18.1 scipy=0.17.1 libgfortran=3.0 pip
+# python -m pip install -r requirements_stable.txt --no-cache-dir
+# python -m pip install -r requirements_blaze_stable.txt --no-cache-dir
+# pip install zipline==1.3.0 --no-cache-dir
+# pip install ipykernel --no-cache-dir
+
+
+
+# execute:
+#   conda env create -f environment.yml
+#   pip install zipline==1.3.0 --no-binary :all:
+
+# We are using stable numpy/pandas/scipy because alphalens fails on new scipy
+
+name: env_alphatools
+channels:
+- conda-forge
+dependencies:
+- python=3.5
+- numpy=1.11.3
+- pandas=0.18.1
+- scipy=0.17.1
+- libgfortran=3.0
+- pip:
+  - -r requirements_stable.txt --install-option="--no-cache-dir"
+  - -r requirements_blaze_stable.txt --install-option="--no-cache-dir"
+#  - ipykernel
+# - graphviz
+#  - tqdm
+#  - alphalens==0.3.2

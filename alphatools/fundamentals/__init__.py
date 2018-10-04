@@ -1,1 +1,1 @@
-from fundamentals import Fundamentals
+from .fundamentals import Fundamentals

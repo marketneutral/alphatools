@@ -1,4 +1,4 @@
-from ics_scheme import (
+from .ics_scheme import (
     SICMajorIndustry,
     Sector,
     SubIndustry

@@ -1,1 +1,1 @@
-from expression import ExpressionAlpha
+from .expression import ExpressionAlpha
