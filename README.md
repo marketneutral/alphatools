@@ -220,6 +220,7 @@ alphatools ingest
 You'll want to make the `env_alphatools` env available to Jupyter. To do this run
 
 ```
+python -m ipykernel install --user --name env_alphatools --display-name "Python 3.5 (env_alphatools)"
 ```
 
 
