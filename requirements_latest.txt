@@ -21,7 +21,9 @@ pandas==0.22.0
 pandas-datareader==0.4.0
 # Needed for parts of pandas.stats
 patsy==0.4.0
-statsmodels==0.6.1
+
+# Q has statsmodels==0.6.1; I think this is incompatible with scipy==1.0.0
+statsmodels==0.9.0
 
 python-dateutil==2.4.2
 six==1.10.0
