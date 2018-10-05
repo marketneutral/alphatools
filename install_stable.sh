@@ -9,6 +9,7 @@ pip install zipline==1.3.0 --no-cache-dir
 pip install ipykernel --no-cache-dir
 pip install alphalens==0.3.2 --no-cache-dir
 pip install pyfolio --no-cache-dir
+pip install graphviz==0.9
 cd ..
 pip install -e alphatools --no-cache-dir
 python -m ipykernel install --user --name env_alphatools_stable --display-name "Python 3.5 (env_alphatools_stable)"
