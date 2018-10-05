@@ -4,6 +4,7 @@ conda create -n env_alphatools_stable -y python=3.5 numpy=1.11.3 pandas=0.18.1 s
 source activate env_alphatools_stable
 python -m pip install -r requirements_stable.txt --no-cache-dir
 python -m pip install -r requirements_blaze_stable.txt --no-cache-dir
+pip install cvxpy==0.4.10 --no-cache-dir
 pip install zipline==1.3.0 --no-cache-dir
 pip install ipykernel --no-cache-dir
 pip install alphalens==0.3.2 --no-cache-dir
@@ -18,6 +19,7 @@ if [ "$MKL_THREADING_LAYER" = "" ]
 then
     export MKL_THREADING_LAYER=GNU
     echo 'export MKL_THREADING_LAYER=GNU' >> ~/.bashrc
+    echo 'Please source the .bashrc file to activate MKL_THREADING env variable.'
 fi
 
 if [ "$THEANO_FLAGS" = "" ]
@@ -25,4 +27,5 @@ then
     # Needed for Mac OS X
     export "THEANO_FLAGS='gcc.cxxflags=-Wno-c++11-narrowing'"
     echo "export \"THEANO_FLAGS='gcc.cxxflags=-Wno-c++11-narrowing'\"" >> ~/.bashrc
+    echo 'Please source the .bashrc file to activate the THEANO_FLAGS env variable.'
 fi
