@@ -10,6 +10,17 @@ cd ..
 pip install -e alphatools --no-cache-dir
 python -m ipykernel install --user --name env_alphatools_stable --display-name "Python 3.5 (env_alphatools_stable)"
 
+source ~/.basrc
 # must append to .bashrc
-export MKL_THREADING_LAYER=GNU       # required for using mkl-service
-export THEANO_FLAGS='gcc.cxxflags=-Wno-c++11-narrowing'   # required on Mac OS X
+if [ "$MKL_THREADING_LAYER" = "" ]
+then
+    export MKL_THREADING_LAYER=GNU
+    echo 'export MKL_THREADING_LAYER=GNU' >> ~/.bashrc
+fi
+
+if [ "$THEANO_FLAGS" = "" ]
+then
+    # Needed for Mac OS X
+    export "THEANO_FLAGS='gcc.cxxflags=-Wno-c++11-narrowing'"
+    echo "export \"THEANO_FLAGS='gcc.cxxflags=-Wno-c++11-narrowing'\"" >> ~/.bashrc
+fi
