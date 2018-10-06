@@ -24,7 +24,7 @@ before_install:
   - export PATH="$HOME/miniconda3/bin:$PATH"
 
 install:
-  - ci/install_conda.sh
+  - ./ci/install_conda.sh
   - ./install_stable.sh
   - zipline ingest
   - alphatools ingest
