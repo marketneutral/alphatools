@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python](https://img.shields.io/badge/Python-3.5-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-
+[![Build Status](https://travis-ci.org/marketneutral/alphatools.svg?branch=master)](https://travis-ci.org/marketneutral/alphatools)
 
 This package provides functions to make the equity alpha factor research process more accessible and productive. Convenience functions sit on top of [zipline](https://github.com/quantopian/zipline) and, specifically, the [`Pipeline`](https://www.quantopian.com/help#pipeline-api) cross-sectional classes and functions in that package. `alphatools` allows you to 
 

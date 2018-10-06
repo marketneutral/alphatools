@@ -5,21 +5,17 @@ python:
   - 3.5
 
 before_install:
-  # We do this conditionally because it saves us some downloading if the
-  # version is the same.
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
-  # required for using mkl-service
   - export MKL_THREADING_LAYER=GNU
   - hash -r
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
-  # Useful for debugging any issues with conda
   - conda info -a
 
 install:
   - ./install_stable.sh
   - source activate env_alphatools_stable
   - zipline ingest -b quantopian-quandl
-  - alphatools ingest
+#  - alphatools ingest
