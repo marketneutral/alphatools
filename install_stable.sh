@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-conda create -n env_alphatools_stable -y python=3.5 numpy=1.11.3 pandas=0.18.1 scipy=0.17.1 libgfortran=3.0 mkl-service pymc3=3.1 lightgbm=2.2.0 scikit-learn pip
+conda create -n env_alphatools_stable -y python=3.5 numpy=1.11.3 pandas=0.18.1 scipy=0.17.1 libgfortran=3.0 mkl-service pymc3=3.1 lightgbm=2.2.0 scikit-optimize=0.5.2 scikit-learn pip
 source activate env_alphatools_stable
 python -m pip install -r requirements_stable.txt --no-cache-dir
 python -m pip install -r requirements_blaze_stable.txt --no-cache-dir
