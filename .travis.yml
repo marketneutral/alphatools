@@ -1,19 +1,30 @@
-language: python
+notifications:
+  email: false
 
-os: osx
+language: generic
 
-python:
-  - 3.5
+sudo: false
+
+cache:
+  directories:
+    - $HOME/miniconda3
+
+before_cache:
+  - rm -rf $HOME/miniconda3/pkgs/cache
+  - rm -rf $HOME/miniconda3/envs/hosts
+
+os:
+  - linux
+  - osx
+
+env:
+  - PYTHON_VERSION="3.5"
 
 before_install:
-  - |
-    MINICONDA_OS=MacOSX
-    wget "https://repo.continuum.io/miniconda/Miniconda3.5-4.3.30-$MINICONDA_OS-x86_64.sh" -O miniconda.sh
-    chmod +x miniconda.sh
-    ./miniconda.sh -b -p $HOME/miniconda
-    export PATH="$HOME/miniconda/bin:$PATH"
+  - export PATH="$HOME/miniconda3/bin:$PATH"
 
 install:
+  - ci/install_conda.sh
   - ./install_stable.sh
   - zipline ingest
   - alphatools ingest
