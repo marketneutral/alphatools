@@ -21,5 +21,5 @@ before_install:
 install:
   - ./install_stable.sh
   - source activate env_alphatools_stable
-  - zipline ingest
+  - zipline ingest -b quantopian-quandl
   - alphatools ingest
