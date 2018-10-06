@@ -1,1 +1,19 @@
 language: python
+
+os: osx
+
+python:
+  - 3.5
+
+before_install:
+  - |
+    MINICONDA_OS=MacOSX
+    wget "https://repo.continuum.io/miniconda/Miniconda3.5-4.3.30-$MINICONDA_OS-x86_64.sh" -O miniconda.sh
+    chmod +x miniconda.sh
+    ./miniconda.sh -b -p $HOME/miniconda
+    export PATH="$HOME/miniconda/bin:$PATH"
+
+install:
+  - ./install_stable.sh
+  - zipline ingest
+  - alphatools ingest
