@@ -20,5 +20,6 @@ before_install:
 
 install:
   - ./install_stable.sh
+  - source activate env_alphatools_stable
   - zipline ingest
   - alphatools ingest

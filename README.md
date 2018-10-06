@@ -217,13 +217,6 @@ alphatools ingest
 ```
 
 
-You'll want to make the `env_alphatools` env available to Jupyter. To do this run
-
-```
-python -m ipykernel install --user --name env_alphatools --display-name "Python 3.5 (env_alphatools)"
-```
-
-
 ## A Word on Sector and Industry Classfiers Included
 
 Sector and Industry data were scraped from Yahoo Finance on September 18, 2017 for the full Quandl WIKI universe at that time. The SIC and CIK codes were scraped from [Rank and Filed](http://rankandfiled.com/) on September 15, 2017. The classifiers built from this data assume that the codes have never and do never change (i.e., there is no concept of an asset being reclassified over time). **Be aware that there is lookahead bias in this** (e.g., a good example of why there is lookahead bias is with Corning, Inc. which is classified as a Technology/Electronic Components company in this dataset, but from 1851 to the 2000s(?) was actually classified as a boring Industrial glass company; the economic make up the company changed sometime in the early 1990s when optic fiber production became an important revenue driver and later with iPhone glass. At some point, the ICS providers changed the classification from "boring" to "high tech", but this was surely lagging the actual transformation of the company; hence...lookahead bias).
