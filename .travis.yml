@@ -17,8 +17,11 @@ before_install:
   - conda info -a
 
 install:
-  - ./install_stable.sh
-  - source activate env_alphatools_stable
+  - if [[ "$TRAVIS_PYTHON_VERSION" == "3.5" ]]; then
+      ./install_stable.sh; source activate env_alphatools_stable;
+    else
+      ./install_latest.sh; source activate env_alphatools_latest;
+    fi
   - zipline ingest -b quantopian-quandl
 #  - alphatools ingest
 
