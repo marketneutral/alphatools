@@ -9,7 +9,7 @@ setup(
     url = "https://github.com/marketneutral/alphatools",
     download_url = "https://github.com/marketneutral/alphatools/archive/0.11.tar.gz",
     packages=find_packages(),
-    python_requires='==3.5.*',
+    python_requires='>=3.5.*',
     install_requires=[
         'zipline<=1.3',
         'alphalens',
