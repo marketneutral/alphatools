@@ -19,3 +19,6 @@ install:
   - source activate env_alphatools_stable
   - zipline ingest -b quantopian-quandl
 #  - alphatools ingest
+
+script:
+  - python ./ci/test.py
