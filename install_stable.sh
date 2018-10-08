@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-conda create -n env_alphatools_stable -y -c conda-forge python=$PYTHON_VERSION numpy=1.11.3 pandas=0.18.1 scipy=0.17.1 libgfortran=3.0 mkl-service pymc3=3.1 lightgbm=2.2.0 scikit-optimize=0.5.2 scikit-learn pip
+conda create -n env_alphatools_stable -y -c conda-forge python=$PYTHON_VERSION numpy=1.11.3 pandas=0.18.1 scipy=0.17.1 libgfortran=3.0 mkl-service pymc3=3.1 lightgbm=2.2.0 scikit-optimize=0.5.2 scikit-learn lapack pip
 source activate env_alphatools_stable
 python -m pip install -r requirements_stable.txt --no-cache-dir
 python -m pip install -r requirements_blaze_stable.txt --no-cache-dir
-pip install cvxpy==0.4.10 --no-cache-dir
+pip install cvxpy==0.4.10 --no-cache-dir --no-binary :all:
 pip install zipline==1.3.0 --no-cache-dir
 pip install ipykernel --no-cache-dir
 pip install alphalens==0.3.2 --no-cache-dir
