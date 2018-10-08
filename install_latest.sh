@@ -11,6 +11,9 @@ pip install alphalens==0.3.2 --no-cache-dir
 pip install pyfolio --no-cache-dir
 pip install ipykernel --no-cache-dir
 pip install graphviz==0.9
+conda install -y -c pytorch pytorch-nightly-cpu
+conda install -y -c fastai torchvision-nightly-cpu
+conda install -y -c fastai fastai
 cd ..
 pip install -e alphatools --no-cache-dir
 python -m ipykernel install --user --name env_alphatools_latest --display-name "env_alphatools_latest"

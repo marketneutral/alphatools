@@ -4,7 +4,9 @@
 [![Python](https://img.shields.io/badge/Python-3.5|3.6-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Build Status](https://travis-ci.org/marketneutral/alphatools.svg?branch=master)](https://travis-ci.org/marketneutral/alphatools)
 
-This package provides functions to make the equity alpha factor research process more accessible and productive. Convenience functions sit on top of [zipline](https://github.com/quantopian/zipline) and, specifically, the [`Pipeline`](https://www.quantopian.com/help#pipeline-api) cross-sectional classes and functions in that package. `alphatools` allows you to 
+This package aims to provide tested environments within which best-in-class open source tools across **both** financial research (e.g., zipline, alphelens, and pyfolio) and machine learning (e.g., LightGBM, PyMC3, PyTorch, fastai) operate together. The "stable" enviroment is on Python 3.5 and does not include fastai. The "latest" environment is on Python 3.6 and relies on the backwards compatibility PEP for packages which state only 3.5 support (e.g., zipline). This environment incldes the pre-release of PyTorch 1.0 and fastai. The PyTorch version in both environments is currently "CPU" only (i.e., no GPU/CUDA for now).
+
+Additionally, this package provides functions to make the equity alpha factor research process more accessible and productive. Convenience functions sit on top of [zipline](https://github.com/quantopian/zipline) and, specifically, the [`Pipeline`](https://www.quantopian.com/help#pipeline-api) cross-sectional classes and functions in that package. `alphatools` allows you to 
 
 - `run_pipeline` in a Jupyter notebook (or from any arbitrary Python code) **in your local environment**,
 - create `Pipeline` factors **at runtime** on **arbitrary data sources** (just expose the endpoint for data sitting somewhere, specify the schema, and...it's available for use in `Pipeline`!),
