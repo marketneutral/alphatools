@@ -13,7 +13,7 @@ pip install graphviz==0.9
 cd ..
 pip install -e alphatools --no-cache-dir
 python -m ipykernel install --user --name env_alphatools_stable --display-name "Python 3.5 (env_alphatools_stable)"
-conda install -y pytorch torchvision -c pytorch
+conda install -y pytorch=0.4.1 torchvision -c pytorch
 
 source ~/.bashrc
 # must append to .bashrc
