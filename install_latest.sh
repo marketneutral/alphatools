@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-conda create -n env_alphatools_latest -y -c conda-forge python=$PYTHON_VERSION numpy=1.14.1 pandas=0.22.0 scipy=1.0.0 libgfortran=3.0 mkl-service pymc3=3.5 lightgbm=2.2.0 scikit-optimize=0.5.2 scikit-learn pip
+conda create -n env_alphatools_latest -y -c conda-forge python=$PYTHON_VERSION numpy=1.14.1 pandas=0.22.0 scipy=1.0.0 libgfortran=3.0 mkl-service pymc3=3.5 lightgbm=2.2.0 scikit-optimize=0.5.2 scikit-learn catboost pip
 source activate env_alphatools_latest
 python -m pip install -r requirements_latest.txt --no-cache-dir
 python -m pip install -r requirements_blaze_latest.txt --no-cache-dir
