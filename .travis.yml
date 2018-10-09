@@ -23,7 +23,10 @@ install:
       ./install_latest.sh; source activate env_alphatools_latest;
     fi
   - zipline ingest -b quantopian-quandl
+  - pip install nose
 #  - alphatools ingest
 
 script:
   - python ./ci/test.py
+  - cd tests
+  - nosetests -v
