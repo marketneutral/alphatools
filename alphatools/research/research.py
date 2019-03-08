@@ -201,7 +201,8 @@ def make_factor_plot(df, start_date, end_date):
         factor_data[factor] = al.utils.get_clean_factor_and_forward_returns(
             factor=df[factor],
             prices=pricing,
-            periods=[1]
+            periods=[1],
+            quantiles=1
         )
     end_time = time.clock()
     print("Time to get arrange factor data: %.2f secs" % (end_time - start_time))
