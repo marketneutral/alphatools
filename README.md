@@ -221,7 +221,7 @@ Sector and Industry data were scraped from Yahoo Finance on September 18, 2017 f
 
 ## A Word on Fundamental Data
 
-Altough there is a `Fundamentals` factor included, there is no Fundamental data included in the package. This factor was built on top of the `DataFrameLoader` to get a `pandas.DataFrame` into a factor. I think I will deprecate this in favor of using the `Factory` object as described above. In the meantime, the `Fundamentals` pipeline factors can be built from `make_fundamentals.py` with your own data. Note that these factors use the `DataFrameLoader` which means the data must fit in memory. 
+Although there is a `Fundamentals` factor included, there is no Fundamental data included in the package. This factor was built on top of the `DataFrameLoader` to get a `pandas.DataFrame` into a factor. I think I will deprecate this in favor of using the `Factory` object as described above. In the meantime, the `Fundamentals` pipeline factors can be built from `make_fundamentals.py` with your own data. Note that these factors use the `DataFrameLoader` which means the data must fit in memory. 
 
 ## Disclaimer
 
@@ -231,11 +231,6 @@ Additionally, nothing in this package constitutes investment advice. This packag
 
 Lastly, there are no automated tests (or any significnat tests for that matter), no automated nightly build, no docstrings, or any other features associated with what you might consider a well supported open source package. 
 
-## Contributing
 
-I hope you enjoy this package. Please leave feedback, or better, contribute. If you are planning to make a PR, please get in touch with me before you do any work as I have a project plan. I am figuring this out as I go and could use help, especially with (in order)
 
-- Incorporating `six` so that the package works with Python 3.x and Python 2.7
-- Creating tests and using Travis CI on this repo
-- Python packaging
-- Dockerizing this thing so we can avoid the painful install process
+I hope you enjoy this package. Please leave feedback.
