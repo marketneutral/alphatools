@@ -26,24 +26,25 @@ from zipline.pipeline.data import USEquityPricing as USEP
 from zipline.pipeline.factors import Returns, AverageDollarVolume
 from zipline.pipeline import Pipeline
 
-universe = AverageDollarVolume(window_length=120).top(500)
+n_assets = 500
+universe = AverageDollarVolume(window_length=120).top(n_assets)
 
 my_factor = (
-    -Returns(mask=universe, window_length=5).
-    demean(groupby=Sector()).
-    rank()
+    (-Returns(mask=universe, window_length=5)
+      .demean(groupby=Sector()))
+    .rank()/n_assets
 )
 
 expr_factor = (
     ExpressionAlpha(
-        'rank(indneutralize(-log(close/delay(close, 4))),IndClass.sector)'
+        'rank(indneutralize(-log(close/delay(close, 4)), IndClass.sector))'
     ).make_pipeline_factor().pipeline_factor(mask=universe)
 )
 
 p = Pipeline(screen=universe)
 
 p.add(my_factor, '5d_MR_Sector_Neutral_Rank')
-p.add(expr_factor, '5d_MR_Expression Alpha')
+p.add(expr_factor, '5d_MR_Expression_Alpha')
 
 p.add(Factory['my_special_data'].value.latest.zscore(), 'Special_Factor')
 
