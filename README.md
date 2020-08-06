@@ -3,6 +3,8 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python](https://img.shields.io/badge/Python-3.5|3.6-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Build Status](https://travis-ci.org/marketneutral/alphatools.svg?branch=master)](https://travis-ci.org/marketneutral/alphatools)
+[![T-shirt](https://img.shields.io/badge/buy-t--shirt-informational)](https://teespring.com/shop/alphatools-t-shirthttps://teespring.com/shop/alphatools-t-shirt)
+
 
 This package aims to provide environments within which best-in-class open source tools across **both** financial research (e.g., `zipline`, `alphelens`, and `pyfolio`) and machine learning (e.g., `scikit-learn`, `LightGBM`, `PyMC3`, `pytorch`, and `fastai`) operate together. The "stable" enviroment is on Python 3.5 and does not include `fastai`. The "latest" environment is on Python 3.6 and relies on the backwards compatibility PEP for packages which state only 3.5 support (e.g., `zipline`). The latest environment includes the pre-release of PyTorch 1.0 and fastai 1.0.x. The PyTorch version in both environments is currently "CPU" only (i.e., no GPU/CUDA for now). The "tests" are only testing that the environments are built without conflict for now.
 
